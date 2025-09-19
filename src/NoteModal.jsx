@@ -1,15 +1,21 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
-export default function NoteModal({ onClose, onSave }) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+export default function NoteModal({ id, onClose, onSave, initialTitle = "", initialContent = "" }) {
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
+
+  const titleInputRef = useRef(null);
+
+  useEffect(() => {
+    titleInputRef.current?.focus();
+  }, []);
 
   const handleAction = () => {
     if (!title.trim() && !content.trim()) {
       onClose();
     } else {
       const newNote = {
-        id: crypto.randomUUID(),
+        id: id ? id : crypto.randomUUID(),
         title: title || "Sin título",
         content: content || "Sin contenido",
         date: new Date().toLocaleDateString("es-ES", {
@@ -35,6 +41,7 @@ export default function NoteModal({ onClose, onSave }) {
           type="text"
           placeholder="Título"
           value={title}
+          ref={titleInputRef}
           onChange={(e) => setTitle(e.target.value)}
           className="bg-transparent text-3xl font-bold mb-4 outline-none"
         />

@@ -10,31 +10,62 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteInfo, setdeleteInfo] = useState({
-    isOpen: false,
-    id: null,
-    title: ""
-  });
+  const initialModalInfo = { 
+    isOpen: false, 
+    id: null, 
+    title: "", 
+    content: "" 
+  };
+
+  const initialDeleteInfo = { 
+    isOpen: false, 
+    id: null, 
+    title: "" 
+  };
+
+  const [modalInfo, setModalInfo] = useState(initialModalInfo);
+  const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
 
-  const handleAddNote = (note) => {
-    setNotes([note, ...notes]);
-    setIsModalOpen(false);
+// Funciones de NoteModal
+  const handleOnSave = (note) => {
+    const noteExists = notes.some(n => n.id === note.id);
+    if (noteExists) {
+      setNotes(notes.map(n => n.id === note.id ? note : n));
+    } else {
+      setNotes([note, ...notes]);
+    }
+    onClose()
   };
 
+  const onClose = () => {
+    setModalInfo(initialModalInfo)
+  }
+
+// Funciones de NotePreview
   const onDelete = (id, title) => {
     const newDeleteInfo = {
       isOpen: true,
       id: id,
       title: title
     }
-    setdeleteInfo(newDeleteInfo)
+    setDeleteInfo(newDeleteInfo)
   }
 
+  const onEdit = (id, title, content) => {
+    const newModalInfo = {
+      isOpen: true,
+      id: id,
+      title: title,
+      content: content
+    }
+    setModalInfo(newModalInfo);
+  }
+
+// Funciones de DeleteMessage
   const onConfirm = () => {
     const newNotes = notes.filter(note => note.id !== deleteInfo.id);
     setNotes(newNotes);
@@ -42,12 +73,18 @@ export default function App() {
   }
 
   const onCancel = () => {
-    const newDeleteInfo = {
-      isOpen: false,
+    setDeleteInfo(initialDeleteInfo)
+  }
+
+// Funciones de AddNoteButton
+  const onAddNote = () => {
+    const newModalInfo = {
+      isOpen: true,
       id: null,
-      title: ""
+      title: "",
+      content: ""
     }
-    setdeleteInfo(newDeleteInfo)
+    setModalInfo(newModalInfo)
   }
 
   return (
@@ -55,7 +92,7 @@ export default function App() {
       <h1 className="text-3xl mb-6">Notas</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <AddNoteButton onClick={() => setIsModalOpen(true)} />
+        <AddNoteButton onClick={onAddNote} />
 
         {notes.map((note, index) => (
           <NotePreview
@@ -65,14 +102,18 @@ export default function App() {
             content={note.content}
             date={note.date}
             onDelete={onDelete}
+            onEdit={onEdit}
           />
         ))}
       </div>
 
-      {isModalOpen && (
+      {modalInfo.isOpen && (
         <NoteModal
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleAddNote}
+          id={modalInfo.id}
+          onClose={onClose}
+          onSave={handleOnSave}
+          initialTitle={modalInfo.title}
+          initialContent={modalInfo.content}
         />
       )}
 
