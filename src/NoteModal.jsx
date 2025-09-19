@@ -21,11 +21,11 @@ export default function NoteModal({ onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-neutral-900 w-[600px] h-[400px] rounded-3xl p-6 relative flex flex-col">
         <button
           onClick={handleAction}
-          className="absolute top-4 right-4 text-2xl"
+          className="absolute top-4 right-4 text-2xl cursor-pointer"
         >
           {!title.trim() && !content.trim() ? "✖" : "✔"}
         </button>

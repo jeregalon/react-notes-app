@@ -33,6 +33,10 @@ export default function App() {
             title={note.title}
             content={note.content}
             date={note.date}
+            onDelete={() => {
+              const newNotes = notes.filter((_, i) => i !== index);
+              setNotes(newNotes);
+            }}
           />
         ))}
       </div>
