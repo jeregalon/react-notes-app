@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import NotePreview from "./NotePreview";
 import AddNoteButton from "./AddNoteButton";
 import NoteModal from "./NoteModal";
+import DeleteMessage from "./DeleteMessage"
 
 export default function App() {
   const [notes, setNotes] = useState(() => {
@@ -10,6 +11,11 @@ export default function App() {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteInfo, setdeleteInfo] = useState({
+    isOpen: false,
+    index: -1,
+    title: ""
+  });
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
@@ -19,6 +25,31 @@ export default function App() {
     setNotes([note, ...notes]);
     setIsModalOpen(false);
   };
+
+  const onDelete = (index, title) => {
+    const newDeleteInfo = {
+      isOpen: true,
+      index: index,
+      title: title
+    }
+    setdeleteInfo(newDeleteInfo)
+  }
+
+  const onConfirm = () => {
+    const index = deleteInfo.index
+    const newNotes = notes.filter((_, i) => i !== index);
+    setNotes(newNotes);
+    onCancel()
+  }
+
+  const onCancel = () => {
+    const newDeleteInfo = {
+      isOpen: false,
+      index: -1,
+      title: ""
+    }
+    setdeleteInfo(newDeleteInfo)
+  }
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -30,13 +61,11 @@ export default function App() {
         {notes.map((note, index) => (
           <NotePreview
             key={index}
+            index={index}
             title={note.title}
             content={note.content}
             date={note.date}
-            onDelete={() => {
-              const newNotes = notes.filter((_, i) => i !== index);
-              setNotes(newNotes);
-            }}
+            onDelete={onDelete}
           />
         ))}
       </div>
@@ -47,6 +76,15 @@ export default function App() {
           onSave={handleAddNote}
         />
       )}
+
+      {deleteInfo.isOpen && (
+        <DeleteMessage 
+          onConfirm={onConfirm}
+          onCancel={onCancel}
+          title={deleteInfo.title}
+        />
+      )}
+
     </div>
   );
 }
