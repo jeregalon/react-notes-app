@@ -13,7 +13,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteInfo, setdeleteInfo] = useState({
     isOpen: false,
-    index: -1,
+    id: null,
     title: ""
   });
 
@@ -26,18 +26,17 @@ export default function App() {
     setIsModalOpen(false);
   };
 
-  const onDelete = (index, title) => {
+  const onDelete = (id, title) => {
     const newDeleteInfo = {
       isOpen: true,
-      index: index,
+      id: id,
       title: title
     }
     setdeleteInfo(newDeleteInfo)
   }
 
   const onConfirm = () => {
-    const index = deleteInfo.index
-    const newNotes = notes.filter((_, i) => i !== index);
+    const newNotes = notes.filter(note => note.id !== deleteInfo.id);
     setNotes(newNotes);
     onCancel()
   }
@@ -45,7 +44,7 @@ export default function App() {
   const onCancel = () => {
     const newDeleteInfo = {
       isOpen: false,
-      index: -1,
+      id: null,
       title: ""
     }
     setdeleteInfo(newDeleteInfo)
@@ -61,7 +60,7 @@ export default function App() {
         {notes.map((note, index) => (
           <NotePreview
             key={index}
-            index={index}
+            id={note.id}
             title={note.title}
             content={note.content}
             date={note.date}

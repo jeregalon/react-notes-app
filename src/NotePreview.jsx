@@ -1,9 +1,9 @@
 import { Trash2 } from "lucide-react"
 
-export default function NotePreview({ index, title, content, date, onDelete }) {
+export default function NotePreview({ id, title, content, date, onDelete }) {
   
   function handleClick() {
-    onDelete(index, title)
+    onDelete(id, title)
   }
   
   return (

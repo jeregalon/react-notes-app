@@ -9,6 +9,7 @@ export default function NoteModal({ onClose, onSave }) {
       onClose();
     } else {
       const newNote = {
+        id: crypto.randomUUID(),
         title: title || "Sin título",
         content: content || "Sin contenido",
         date: new Date().toLocaleDateString("es-ES", {
