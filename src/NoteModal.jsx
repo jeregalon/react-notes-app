@@ -6,6 +6,9 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
 
   const titleInputRef = useRef(null);
 
+  const noTitleMessage = "Sin título"
+  const noContentMessage = "Sin contenido"
+
   useEffect(() => {
     titleInputRef.current?.focus();
   }, []);
@@ -16,8 +19,8 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
     } else {
       const newNote = {
         id: id ? id : crypto.randomUUID(),
-        title: title || "Sin título",
-        content: content || "Sin contenido",
+        title: title || noTitleMessage,
+        content: content || noContentMessage,
         date: new Date().toLocaleDateString("es-ES", {
           day: "numeric",
           month: "long",
@@ -40,7 +43,7 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
         <input
           type="text"
           placeholder="Título"
-          value={title}
+          value={title === noTitleMessage ? "" : title}
           ref={titleInputRef}
           onChange={(e) => setTitle(e.target.value)}
           className="bg-transparent text-3xl font-bold mb-4 outline-none"
@@ -48,7 +51,7 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
 
         <textarea
           placeholder="Contenido"
-          value={content}
+          value={content === noContentMessage ? "" : content}
           onChange={(e) => setContent(e.target.value)}
           className="bg-transparent flex-1 resize-none outline-none text-lg"
         />
