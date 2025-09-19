@@ -17,14 +17,12 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
     if (!title.trim() && !content.trim()) {
       onClose();
     } else {
+      const now = new Date()
       const newNote = {
         id: id ? id : crypto.randomUUID(),
         title: title || noTitleMessage,
         content: content || noContentMessage,
-        date: new Date().toLocaleDateString("es-ES", {
-          day: "numeric",
-          month: "long",
-        }),
+        date: now.toISOString(),
       };
       onSave(newNote);
     }

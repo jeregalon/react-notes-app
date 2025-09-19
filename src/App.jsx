@@ -94,16 +94,18 @@ export default function App() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <AddNoteButton onClick={onAddNote} />
 
-        {notes.map((note, index) => (
-          <NotePreview
-            key={index}
-            id={note.id}
-            title={note.title}
-            content={note.content}
-            date={note.date}
-            onDelete={onDelete}
-            onEdit={onEdit}
-          />
+        {[...notes]
+          .sort((a, b) => new Date(b.date) - new Date(a.date)) // más recientes primero
+          .map((note) => (
+            <NotePreview
+              key={note.id}
+              id={note.id}
+              title={note.title}
+              content={note.content}
+              date={note.date}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
         ))}
       </div>
 

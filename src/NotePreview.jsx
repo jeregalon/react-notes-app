@@ -24,7 +24,9 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
       </button>
       <h2 className="font-bold text-lg mb-2">{title}:</h2>
       <p className="text-sm text-gray-200 mb-4 line-clamp-6">{content}</p>
-      <p className="text-xs text-gray-400 mt-auto">{date}</p>
+      <p className="text-xs text-gray-400 mt-auto">
+        {new Date(date).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}
+      </p>
     </div>
   );
 }
