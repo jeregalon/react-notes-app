@@ -33,9 +33,7 @@ export default function App() {
   };
 
   const [modalInfo, setModalInfo] = useState(initialModalInfo);
-  // const [folderModalInfo, setFolderModalInfo] = useState(initialFolderModalInfo)
   const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
-  const [currentFolder, setCurrentFolder] = useState(null) // null = todas las notas
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
@@ -61,7 +59,7 @@ export default function App() {
   }
 
 // Funciones de NotePreview
-  const onDelete = (id, title, type = 'note') => {
+  const onDelete = (id, title, type) => {
     const newDeleteInfo = {
       isOpen: true,
       id: id,
@@ -76,7 +74,7 @@ export default function App() {
       isOpen: true,
       id: id,
       title: title,
-      content: content
+      content: content  // TODO agregar folderId
     }
     setModalInfo(newModalInfo);
   }
@@ -97,13 +95,14 @@ export default function App() {
     setDeleteInfo(initialDeleteInfo)
   }
 
-  const onAddNote = () => {
+  const onAddNote = (folderId = null) => {
+    console.log(folderId)
     const newModalInfo = {
       isOpen: true,
       id: null,
       title: "",
       content: "",
-      folderId: currentFolder
+      folderId: folderId
     }
     setModalInfo(newModalInfo)
   }
@@ -161,6 +160,7 @@ export default function App() {
                 title={item.title}
                 date={item.date}
                 onDelete={onDelete}
+                onAddNote={onAddNote}
               />
             )
         ))}

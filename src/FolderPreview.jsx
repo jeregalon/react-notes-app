@@ -1,7 +1,9 @@
 import { Folder, Trash2, Edit2, Check } from "lucide-react"
 import { useEffect, useState, useRef } from "react";
+import NotePreview from "./NotePreview";
+import { TYPES } from "./constants";
 
-export default function FolderPreview({ id, date, onDelete, onEdit }) {
+export default function FolderPreview({ id, date, notes=[], onDelete, onAddNote }) {
   
   const [name, setName] = useState("Nueva carpeta")
   const [onEditMode, setOnEditMode] = useState(false)
@@ -17,15 +19,16 @@ export default function FolderPreview({ id, date, onDelete, onEdit }) {
     }
   }, [onEditMode]);
 
-  function handleClick() {
-    // onDelete(id, name)
+  function handleDelete() {
+    onDelete(id, name, TYPES.FOLDER)
   }
 
   function handleEdit() {
-    if (onEditMode) {
-      // onEdit(id, name);
-    }
     setOnEditMode(!onEditMode)
+  }
+
+  function handleClick() {
+    onAddNote(id)
   }
 
   function handleKeyDown(e) {
@@ -35,21 +38,13 @@ export default function FolderPreview({ id, date, onDelete, onEdit }) {
       setOnEditMode(false); // Cancelar al presionar Escape
     }
   }
-
-  function handleClick() {
-    // onDelete(id, name)
-  }
-
-  function handleEdit() {
-    setOnEditMode(!onEditMode)
-  }
   
   return (
     <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] hover:shadow-lg transition flex flex-col relative">
       <div className="flex items-center mb-2">
         <Folder size={32} className="text-yellow-400 mr-2" />
         <input 
-        className="font-bold text-lg truncate outline-none"
+          className="font-bold text-lg truncate outline-none text-yellow-400 mr-2"
           type="text"
           placeholder="Título"
           value={name}
@@ -65,8 +60,23 @@ export default function FolderPreview({ id, date, onDelete, onEdit }) {
         </button>
       </div>
 
+      <div className="grid grid-cols-2 gap-2 flex-1">
+        <button 
+          onClick={handleClick}
+          className="bg-neutral-700 rounded-lg flex items-center justify-center text-6xl font-bold p-8 text-white transition cursor-pointer transition transform active:scale-95 duration-150 ease-in-out">
+          +
+        </button>
+
+        {notes.map((note) => (
+          <div key={note.id} className="bg-neutral-700 rounded-lg p-2 overflow-hidden">
+            <h3 className="font-bold text-sm truncate">{note.title}</h3>
+            <p className="text-xs text-gray-300 truncate">{note.content}</p>
+          </div>
+        ))}
+      </div>
+
       <button 
-        onClick={handleClick} 
+        onClick={handleDelete} 
         className="absolute top-3 right-3 p-2 text-gray-400 hover:text-red-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
         <Trash2 size={18} />
       </button>

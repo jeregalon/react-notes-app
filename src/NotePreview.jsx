@@ -1,9 +1,10 @@
 import { Trash2, Edit2 } from "lucide-react"
+import { TYPES } from "./constants";
 
 export default function NotePreview({ id, title, content, date, onDelete, onEdit }) {
   
-  function handleClick() {
-    onDelete(id, title)
+  function handleDelete() {
+    onDelete(id, title, TYPES.NOTE)
   }
 
   function handleEdit() {
@@ -18,7 +19,7 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
         <Edit2 size={18} />
       </button>
       <button 
-        onClick={handleClick} 
+        onClick={handleDelete} 
         className="absolute top-3 right-3 p-2 text-gray-400 hover:text-red-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
         <Trash2 size={18} />
       </button>
