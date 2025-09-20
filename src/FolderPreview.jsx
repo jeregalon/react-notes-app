@@ -1,5 +1,5 @@
 import { Folder, Trash2, Edit2, Check } from "lucide-react"
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import NotePreview from "./NotePreview";
 import { TYPES } from "./constants";
 
@@ -20,22 +20,35 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
       titleInputRef.current?.select();
     }
   }, [onEditMode]);
-
+  
   function handleDelete() {
     onDelete(id, name, TYPES.FOLDER)
   }
 
-  function handleSave() {
-    if (name != title) {
+  const handleSave = useCallback(() => {
+    if (name !== title) {
       const updatedFolder = {
         id,
         title: name,
-        date: new Date().toISOString(), // fecha de modificación
+        date: new Date().toISOString(),
       };
       onEdit(updatedFolder);
     }
     setOnEditMode(false);
-  }
+  }, [id, name, title, onEdit]);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (onEditMode && titleInputRef.current && !titleInputRef.current.contains(e.target)) {
+        handleSave();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onEditMode, handleSave]);
 
   function handleClick() {
     onAddNote(id)
@@ -83,6 +96,16 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
             className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
             {icon}
         </button>
+        <button 
+          onClick={handleDelete}
+          disabled={onEditMode}
+          className={`absolute top-3 right-3 p-2 transition cursor-pointer transform duration-200 hover:scale-105 
+            ${onEditMode 
+              ? "text-gray-600 cursor-not-allowed"   // gris apagado
+              : "text-gray-400 hover:text-red-500"}`
+          }>
+          <Trash2 size={18} />
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-2 flex-1">
@@ -100,11 +123,6 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
         ))}
       </div>
 
-      <button 
-        onClick={handleDelete} 
-        className="absolute top-3 right-3 p-2 text-gray-400 hover:text-red-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
-        <Trash2 size={18} />
-      </button>
       <p className="text-xs text-gray-400 mt-auto">
         {new Date(date).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}
       </p>

@@ -2,12 +2,14 @@ import { AlertTriangle } from "lucide-react";
 
 export default function DeleteMessage({ onConfirm, onCancel, title }) {
 
+  const showTitle = title.length > 30 ? `${title.slice(0, 30)}...` : title
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-neutral-900 w-[500px] h-[300px] rounded-3xl relative flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center">
           <AlertTriangle size={80} />
-          <span className="text-lg mt-2">¿Está seguro que desea eliminar {title.slice(0, 30)}?</span>
+          <span className="text-lg mt-2 px-10 block w-full text-center">¿Está seguro que desea eliminar {showTitle}?</span>
         </div>
         <div className="h-[80px]">
           <div className="flex h-full">
