@@ -7,7 +7,7 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
 
   const titleInputRef = useRef(null);
 
-  const noTitleMessage = "Sin título"
+  const noTitleMessage = "Nota sin título"
   const noContentMessage = "Sin contenido"
 
   useEffect(() => {

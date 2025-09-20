@@ -3,9 +3,11 @@ import { useEffect, useState, useRef } from "react";
 import NotePreview from "./NotePreview";
 import { TYPES } from "./constants";
 
-export default function FolderPreview({ id, date, notes=[], onDelete, onAddNote }) {
+export default function FolderPreview({ id, date, title, notes=[], onDelete, onAddNote, onEdit }) {
   
-  const [name, setName] = useState("Nueva carpeta")
+  const noTitleMessage = "Carpeta sin título"
+
+  const [name, setName] = useState(title || noTitleMessage)
   const [onEditMode, setOnEditMode] = useState(false)
 
   const icon = onEditMode ? <Check size={18} /> : <Edit2 size={18} />
@@ -23,8 +25,16 @@ export default function FolderPreview({ id, date, notes=[], onDelete, onAddNote 
     onDelete(id, name, TYPES.FOLDER)
   }
 
-  function handleEdit() {
-    setOnEditMode(!onEditMode)
+  function handleSave() {
+    if (name != title) {
+      const updatedFolder = {
+        id,
+        title: name,
+        date: new Date().toISOString(), // fecha de modificación
+      };
+      onEdit(updatedFolder);
+    }
+    setOnEditMode(false);
   }
 
   function handleClick() {
@@ -33,12 +43,12 @@ export default function FolderPreview({ id, date, notes=[], onDelete, onAddNote 
 
   function handleKeyDown(e) {
     if (e.key === 'Enter') {
-      handleEdit(); // Guardar al presionar Enter
+      handleSave(); // Guardar al presionar Enter
     } else if (e.key === 'Escape') {
       setOnEditMode(false); // Cancelar al presionar Escape
     }
   }
-  
+    
   return (
     <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] hover:shadow-lg transition flex flex-col relative">
       <div className="flex items-center mb-2">
@@ -46,15 +56,28 @@ export default function FolderPreview({ id, date, notes=[], onDelete, onAddNote 
         <input 
           className="font-bold text-lg truncate outline-none text-yellow-400 mr-2"
           type="text"
-          placeholder="Título"
-          value={name}
+          placeholder={noTitleMessage}
+          value={
+            name === noTitleMessage
+            ? ""
+            : (name ?? "")
+          }
           ref={titleInputRef}
-          onChange={(e) => setName(e.target.value)}
+          onChange={
+            (e) => {
+              const currentText = e.target.value
+              const newName = 
+                currentText === "" 
+                ? noTitleMessage
+                : currentText
+              setName(newName)
+            }
+          }
           onKeyDown={handleKeyDown}
           readOnly={!onEditMode}
         />
         <button
-            onClick={handleEdit}
+            onClick={onEditMode ? handleSave : () => setOnEditMode(true)}
             className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
             {icon}
         </button>

@@ -51,6 +51,16 @@ export default function App() {
     } else {
       setNotes([note, ...notes]);
     }
+    if (note.folderId) {  // actualizar también la carpeta donde se crea la nota
+      const folder = folders.find(f => f.id === note.folderId);
+      if (folder) {
+        const updatedFolder = {
+          ...folder,
+          date: new Date().toISOString(),
+        };
+        onEditFolder(updatedFolder);
+      }
+    }
     onClose()
   };
 
@@ -69,7 +79,7 @@ export default function App() {
     setDeleteInfo(newDeleteInfo)
   }
 
-  const onEdit = (id, title, content) => {
+  const onEditNote = (id, title, content) => {
     const newModalInfo = {
       isOpen: true,
       id: id,
@@ -120,6 +130,14 @@ export default function App() {
     setFolders([newFolder, ...folders]);
   }
 
+  const onEditFolder = (updatedFolder) => {
+    setFolders(folders.map(folder =>
+      folder.id === updatedFolder.id 
+      ? { ...folder, ...updatedFolder } 
+      : folder
+    ));
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-8">
       <div className="flex gap-6 p-3 items-center">
@@ -153,7 +171,7 @@ export default function App() {
                 content={item.content}
                 date={item.date}
                 onDelete={onDelete}
-                onEdit={onEdit}
+                onEdit={onEditNote}
               />
             ) : (
               <FolderPreview
@@ -164,6 +182,7 @@ export default function App() {
                 notes={notes.filter(note => note.folderId === item.id)}
                 onDelete={onDelete}
                 onAddNote={onAddNote}
+                onEdit={onEditFolder}
               />
             )
         ))}
