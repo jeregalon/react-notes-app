@@ -95,8 +95,8 @@ export default function App() {
     setDeleteInfo(initialDeleteInfo)
   }
 
+// Otras funciones
   const onAddNote = (folderId = null) => {
-    console.log(folderId)
     const newModalInfo = {
       isOpen: true,
       id: null,
@@ -159,6 +159,7 @@ export default function App() {
                 id={item.id}
                 title={item.title}
                 date={item.date}
+                notes={notes.filter(note => note.folderId === item.id)}
                 onDelete={onDelete}
                 onAddNote={onAddNote}
               />
@@ -173,6 +174,7 @@ export default function App() {
           onSave={handleOnSave}
           initialTitle={modalInfo.title}
           initialContent={modalInfo.content}
+          folderId={modalInfo.folderId}
         />
       )}
 
