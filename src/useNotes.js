@@ -61,12 +61,13 @@ export default function useNotes() {
     }
   }, []);
 
-  const addFolder = useCallback(() => {
+  const addFolder = useCallback((folderId) => {
     const now = new Date();
     const newFolder = {
       id: crypto.randomUUID(),
       title: "Nueva carpeta",
       date: now.toISOString(),
+      folderId: folderId,
       type: TYPES.FOLDER,
     };
     setFolders((prev) => [newFolder, ...prev]);

@@ -22,6 +22,7 @@ export default function App() {
 
   const [modalInfo, setModalInfo] = useState(initialModalInfo);
   const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
+  const [openedFolder, setOpenedFolder] = useState(null)
 
   // --- Funciones de UI ---
   const handleOnSave = (note) => {
@@ -50,27 +51,31 @@ export default function App() {
     setModalInfo({ isOpen: true, id: null, title: "", content: "", folderId });
   };
 
+  const openFolder = (folderId) => {
+    setOpenedFolder(folderId)
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-8">
       <div className="flex gap-6 p-3 items-center">
         <h1 className="text-3xl">Notas</h1>
-        <div 
-          onClick={() => onAddNote(null)}
+        <button 
+          onClick={() => onAddNote(openedFolder)}
           className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
           <FileText size={30}/>
           <h1 className="text-2xl">Nueva nota</h1>
-        </div>
-        <div 
-          onClick={addFolder}
+        </button>
+        <button 
+          onClick={() => addFolder(openedFolder)}
           className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
           <Folder size={30}/>
           <h1 className="text-2xl">Nueva carpeta</h1>
-        </div>
+        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {[...folders, ...notes]
-          .filter(item => item.type === TYPES.FOLDER || item.folderId === null)
+          .filter(item => item.folderId === openedFolder)
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .map((item) =>
             item.type === TYPES.NOTE ? (
@@ -93,6 +98,7 @@ export default function App() {
                 onDelete={onDelete}
                 onAddNote={onAddNote}
                 onEdit={editFolder}
+                onOpen={openFolder}
               />
             )
         )}

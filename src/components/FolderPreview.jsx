@@ -1,9 +1,9 @@
-import { Folder, Trash2, Edit2, Check } from "lucide-react"
+import { Folder, Trash2, Edit2, Check, FolderOpen } from "lucide-react"
 import { useEffect, useState, useRef, useCallback } from "react";
 import NotePreview from "./NotePreview";
 import { TYPES } from "../constants";
 
-export default function FolderPreview({ id, date, title, notes=[], onDelete, onAddNote, onEdit }) {
+export default function FolderPreview({ id, date, title, notes=[], onDelete, onAddNote, onEdit, onOpen, folderId = null }) {
   
   const noTitleMessage = "Carpeta sin título"
 
@@ -31,11 +31,12 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
         id,
         title: name,
         date: new Date().toISOString(),
+        folderId: folderId 
       };
       onEdit(updatedFolder);
     }
     setOnEditMode(false);
-  }, [id, name, title, onEdit]);
+  }, [id, name, title, onEdit, folderId]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -61,9 +62,13 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
       setOnEditMode(false); // Cancelar al presionar Escape
     }
   }
+
+  function handleOpen() {
+    onOpen(id)
+  }
     
   return (
-    <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] hover:shadow-lg transition flex flex-col relative">
+    <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] max-h-[220px] hover:shadow-lg transition flex flex-col relative">
       <div className="flex items-center mb-2">
         <Folder size={32} className="text-yellow-400 mr-2 shrink-0" />
         <div className="flex-1 pr-16">
@@ -108,19 +113,27 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 flex-1">
-        <button 
-          onClick={handleClick}
-          className="bg-neutral-700 rounded-lg flex items-center justify-center text-6xl font-bold p-8 text-white transition cursor-pointer transition transform active:scale-95 duration-150 ease-in-out">
-          +
-        </button>
+      <div className="flex-1 min-h-0 mb-2">
+        <div className="grid grid-cols-3 grid-rows-2 h-full gap-2 auto-rows-fr">
+          <button 
+            onClick={handleClick}
+            className="bg-neutral-700 rounded-lg flex items-center justify-center text-3xl font-bold text-white transition cursor-pointer transition transform active:scale-95 duration-150 ease-in-out min-h-0 overflow-hidden">
+            +
+          </button>
 
-        {notes.map((note) => (
-          <div key={note.id} className="bg-neutral-700 rounded-lg p-2 overflow-hidden">
-            <h3 className="font-bold text-sm truncate">{note.title}</h3>
-            <p className="text-xs text-gray-300 truncate">{note.content}</p>
-          </div>
-        ))}
+          {notes.slice(0, 4).map((note) => ( // Limitar a 4 notas para que quepan
+            <div key={note.id} className="bg-neutral-700 rounded-lg p-2 overflow-hidden min-h-0 flex flex-col">
+              <h3 className="font-bold text-sm truncate mb-1">{note.title}</h3>
+              <p className="text-xs text-gray-300 truncate flex-1 overflow-hidden">{note.content}</p>
+            </div>
+          ))}
+
+          <button 
+            onClick={handleOpen}
+            className="bg-neutral-700 rounded-lg flex items-center justify-center text-1xl font-bold text-white transition cursor-pointer transition transform active:scale-95 duration-150 ease-in-out min-h-0 overflow-hidden">
+            <FolderOpen />
+          </button>
+        </div>
       </div>
 
       <p className="text-xs text-gray-400 mt-auto">
