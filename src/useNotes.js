@@ -23,6 +23,14 @@ export default function useNotes() {
   }, [folders]);
 
   // --- Funciones ---
+  const editFolder = useCallback((updatedFolder) => {
+    setFolders((prev) =>
+      prev.map((f) =>
+        f.id === updatedFolder.id ? { ...f, ...updatedFolder } : f
+      )
+    );
+  }, []);
+  
   const addNote = useCallback((note) => {
     const exists = notes.some(n => n.id === note.id);
     if (exists) {
@@ -40,7 +48,7 @@ export default function useNotes() {
         });
       }
     }
-  }, [notes, folders]);
+  }, [notes, folders, editFolder]);
 
   const deleteItem = useCallback((id, type) => {
     if (type === TYPES.NOTE) {
@@ -60,14 +68,6 @@ export default function useNotes() {
       type: TYPES.FOLDER,
     };
     setFolders((prev) => [newFolder, ...prev]);
-  }, []);
-
-  const editFolder = useCallback((updatedFolder) => {
-    setFolders((prev) =>
-      prev.map((f) =>
-        f.id === updatedFolder.id ? { ...f, ...updatedFolder } : f
-      )
-    );
   }, []);
 
   return {
