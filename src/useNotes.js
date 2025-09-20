@@ -30,11 +30,13 @@ export default function useNotes() {
       )
     );
   }, []);
-  
+
   const addNote = useCallback((note) => {
     const exists = notes.some(n => n.id === note.id);
     if (exists) {
-      setNotes(notes.map(n => (n.id === note.id ? note : n)));
+      setNotes(notes.map(n => (
+        n.id === note.id && (n.title != note.title || n.content != note.content) ? note : n
+      )));
     } else {
       setNotes([note, ...notes]);
     }
