@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { TYPES } from './constants'
+import { TYPES } from '../constants'
 
 export default function NoteModal({ id, onClose, onSave, initialTitle = "", initialContent = "", folderId = null }) {
   const MAX_TITLE_LENGTH = 50;

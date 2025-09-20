@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import NotePreview from "./NotePreview";
-import NoteModal from "./NoteModal";
-import DeleteMessage from "./DeleteMessage"
+import NotePreview from "./components/NotePreview";
+import NoteModal from "./components/NoteModal";
+import DeleteMessage from "./components/DeleteMessage"
 import { FileText, Folder } from 'lucide-react';
-import FolderPreview from "./FolderPreview";
+import FolderPreview from "./components/FolderPreview";
 import { TYPES } from './constants'
 
 export default function App() {

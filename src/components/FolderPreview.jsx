@@ -1,7 +1,7 @@
 import { Folder, Trash2, Edit2, Check } from "lucide-react"
 import { useEffect, useState, useRef, useCallback } from "react";
 import NotePreview from "./NotePreview";
-import { TYPES } from "./constants";
+import { TYPES } from "../constants";
 
 export default function FolderPreview({ id, date, title, notes=[], onDelete, onAddNote, onEdit }) {
   

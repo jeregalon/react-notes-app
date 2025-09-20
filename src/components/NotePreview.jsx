@@ -1,5 +1,5 @@
 import { Trash2, Edit2 } from "lucide-react"
-import { TYPES } from "./constants";
+import { TYPES } from "../constants";
 
 export default function NotePreview({ id, title, content, date, onDelete, onEdit }) {
   
