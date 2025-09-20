@@ -98,7 +98,7 @@ export default function App() {
   }
 
 // Otras funciones
-  const onAddNote = (folderId = null) => {
+  const onAddNote = (folderId) => {
     const newModalInfo = {
       isOpen: true,
       id: null,
@@ -125,7 +125,7 @@ export default function App() {
       <div className="flex gap-6 p-3 items-center">
         <h1 className="text-3xl">Notas</h1>
         <div 
-          onClick={onAddNote}
+          onClick={() => onAddNote(null)} // Si no lo hago así, React pasa el event como primer argumento de la función
           className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
           <FileText size={30}/>
           <h1 className="text-2xl">Nueva nota</h1>
