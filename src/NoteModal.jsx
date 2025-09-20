@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { TYPES } from './constants'
 
 export default function NoteModal({ id, onClose, onSave, initialTitle = "", initialContent = "" }) {
   const [title, setTitle] = useState(initialTitle);
@@ -23,6 +24,8 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
         title: title || noTitleMessage,
         content: content || noContentMessage,
         date: now.toISOString(),
+        folderId: null,
+        type: TYPES.NOTE
       };
       onSave(newNote);
     }

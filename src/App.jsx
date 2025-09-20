@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import NotePreview from "./NotePreview";
-import AddNoteButton from "./AddNoteButton";
 import NoteModal from "./NoteModal";
 import DeleteMessage from "./DeleteMessage"
+import { FileText, Folder } from 'lucide-react';
+import FolderPreview from "./FolderPreview";
+import { TYPES } from './constants'
 
 export default function App() {
   const [notes, setNotes] = useState(() => {
@@ -10,25 +12,38 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [folders, setFolders] = useState(() => {
+    const saved = localStorage.getItem("folders");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const initialModalInfo = { 
     isOpen: false, 
     id: null, 
     title: "", 
-    content: "" 
+    content: "",
+    folderId: null 
   };
 
   const initialDeleteInfo = { 
     isOpen: false, 
     id: null, 
-    title: "" 
+    title: "",
+    type: ""
   };
 
   const [modalInfo, setModalInfo] = useState(initialModalInfo);
+  // const [folderModalInfo, setFolderModalInfo] = useState(initialFolderModalInfo)
   const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
+  const [currentFolder, setCurrentFolder] = useState(null) // null = todas las notas
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
+
+  useEffect(() => {
+    localStorage.setItem("folders", JSON.stringify(folders));
+  }, [folders]);
 
 // Funciones de NoteModal
   const handleOnSave = (note) => {
@@ -46,11 +61,12 @@ export default function App() {
   }
 
 // Funciones de NotePreview
-  const onDelete = (id, title) => {
+  const onDelete = (id, title, type = 'note') => {
     const newDeleteInfo = {
       isOpen: true,
       id: id,
-      title: title
+      title: title,
+      type: type
     }
     setDeleteInfo(newDeleteInfo)
   }
@@ -67,45 +83,86 @@ export default function App() {
 
 // Funciones de DeleteMessage
   const onConfirm = () => {
-    const newNotes = notes.filter(note => note.id !== deleteInfo.id);
-    setNotes(newNotes);
-    onCancel()
-  }
+    if (deleteInfo.type === 'note') {
+      const newNotes = notes.filter(note => note.id !== deleteInfo.id);
+      setNotes(newNotes);
+    } else if (deleteInfo.type === 'folder') {
+
+      // TODO: Al eliminar una carpeta, borrar las notas que están dentro
+    }
+    onCancel();
+  };
 
   const onCancel = () => {
     setDeleteInfo(initialDeleteInfo)
   }
 
-// Funciones de AddNoteButton
   const onAddNote = () => {
     const newModalInfo = {
       isOpen: true,
       id: null,
       title: "",
-      content: ""
+      content: "",
+      folderId: currentFolder
     }
     setModalInfo(newModalInfo)
   }
 
+  const onAddFolder = () => {
+    const now = new Date()
+    const newFolder = {
+      id: crypto.randomUUID(),
+      title: "Nueva carpeta",
+      date: now.toISOString(),
+      type: TYPES.FOLDER
+    };
+    setFolders([newFolder, ...folders]);
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <h1 className="text-3xl mb-6">Notas</h1>
+      <div className="flex gap-6 p-3 items-center">
+        <h1 className="text-3xl">Notas</h1>
+        <div 
+          onClick={onAddNote}
+          className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
+          <FileText size={30}/>
+          <h1 className="text-2xl">Nueva nota</h1>
+        </div>
+        <div 
+          onClick={onAddFolder}
+          className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
+          <Folder size={30}/>
+          <h1 className="text-2xl">Nueva carpeta</h1>
+        </div>
+      </div>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <AddNoteButton onClick={onAddNote} />
-
-        {[...notes]
+        
+        {[...folders, ...notes]
+          .filter(item => item.type === TYPES.FOLDER || item.folderId === null) // solo carpetas y notas sueltas
           .sort((a, b) => new Date(b.date) - new Date(a.date)) // más recientes primero
-          .map((note) => (
-            <NotePreview
-              key={note.id}
-              id={note.id}
-              title={note.title}
-              content={note.content}
-              date={note.date}
-              onDelete={onDelete}
-              onEdit={onEdit}
-            />
+          .map((item) => (
+            item.type === TYPES.NOTE ? (
+              <NotePreview
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                content={item.content}
+                date={item.date}
+                onDelete={onDelete}
+                onEdit={onEdit}
+              />
+            ) : (
+              <FolderPreview
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                date={item.date}
+                onDelete={onDelete}
+              />
+            )
         ))}
       </div>
 
