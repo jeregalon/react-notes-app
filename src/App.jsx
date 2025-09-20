@@ -81,12 +81,14 @@ export default function App() {
 
 // Funciones de DeleteMessage
   const onConfirm = () => {
-    if (deleteInfo.type === 'note') {
+    if (deleteInfo.type === TYPES.NOTE) {
       const newNotes = notes.filter(note => note.id !== deleteInfo.id);
       setNotes(newNotes);
-    } else if (deleteInfo.type === 'folder') {
-
-      // TODO: Al eliminar una carpeta, borrar las notas que están dentro
+    } else if (deleteInfo.type === TYPES.FOLDER) {
+      const newNotes = notes.filter(note => note.folderId !== deleteInfo.id);
+      const newFolders = folders.filter(folder => folder.id !== deleteInfo.id);
+      setNotes(newNotes)
+      setFolders(newFolders)
     }
     onCancel();
   };
