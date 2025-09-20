@@ -23,7 +23,9 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
         className="absolute top-3 right-3 p-2 text-gray-400 hover:text-red-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
         <Trash2 size={18} />
       </button>
-      <h2 className="font-bold text-lg mb-2">{title}:</h2>
+      <div className="pr-16"> 
+        <h2 className="font-bold text-lg mb-2 truncate">{title}</h2>
+      </div>      
       <p className="text-sm text-gray-200 mb-4 line-clamp-6">{content}</p>
       <p className="text-xs text-gray-400 mt-auto">
         {new Date(date).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}

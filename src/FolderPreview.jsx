@@ -52,30 +52,32 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
   return (
     <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] hover:shadow-lg transition flex flex-col relative">
       <div className="flex items-center mb-2">
-        <Folder size={32} className="text-yellow-400 mr-2" />
-        <input 
-          className="font-bold text-lg truncate outline-none text-yellow-400 mr-2"
-          type="text"
-          placeholder={noTitleMessage}
-          value={
-            name === noTitleMessage
-            ? ""
-            : (name ?? "")
-          }
-          ref={titleInputRef}
-          onChange={
-            (e) => {
-              const currentText = e.target.value
-              const newName = 
-                currentText === "" 
-                ? noTitleMessage
-                : currentText
-              setName(newName)
+        <Folder size={32} className="text-yellow-400 mr-2 shrink-0" />
+        <div className="flex-1 pr-16">
+          <input 
+            className="font-bold text-lg truncate outline-none text-yellow-400 w-full"
+            type="text"
+            placeholder={noTitleMessage}
+            value={
+              name === noTitleMessage
+              ? ""
+              : (name ?? "")
             }
-          }
-          onKeyDown={handleKeyDown}
-          readOnly={!onEditMode}
-        />
+            ref={titleInputRef}
+            onChange={
+              (e) => {
+                const currentText = e.target.value
+                const newName = 
+                  currentText === "" 
+                  ? noTitleMessage
+                  : currentText.slice(0, 50)
+                setName(newName)
+              }
+            }
+            onKeyDown={handleKeyDown}
+            readOnly={!onEditMode}
+          />
+        </div>
         <button
             onClick={onEditMode ? handleSave : () => setOnEditMode(true)}
             className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">

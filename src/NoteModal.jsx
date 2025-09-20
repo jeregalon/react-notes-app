@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { TYPES } from './constants'
 
 export default function NoteModal({ id, onClose, onSave, initialTitle = "", initialContent = "", folderId = null }) {
+  const MAX_TITLE_LENGTH = 50;
+  const MAX_CONTENT_LENGTH = 1000;
+  
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
 
@@ -21,8 +24,8 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
       const now = new Date()
       const newNote = {
         id: id ? id : crypto.randomUUID(),
-        title: title || noTitleMessage,
-        content: content || noContentMessage,
+        title: (title || noTitleMessage).slice(0, MAX_TITLE_LENGTH),
+        content: (content || noContentMessage).slice(0, MAX_CONTENT_LENGTH),
         date: now.toISOString(),
         folderId: folderId,
         type: TYPES.NOTE

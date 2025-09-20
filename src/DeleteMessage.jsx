@@ -7,7 +7,7 @@ export default function DeleteMessage({ onConfirm, onCancel, title }) {
       <div className="bg-neutral-900 w-[500px] h-[300px] rounded-3xl relative flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center">
           <AlertTriangle size={80} />
-          <span className="text-lg mt-2">¿Está seguro que desea eliminar {title}?</span>
+          <span className="text-lg mt-2">¿Está seguro que desea eliminar {title.slice(0, 30)}?</span>
         </div>
         <div className="h-[80px]">
           <div className="flex h-full">
