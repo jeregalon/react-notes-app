@@ -1,10 +1,8 @@
 import { Folder, Trash2, Edit2, Check, FolderOpen } from "lucide-react"
 import { useEffect, useState, useRef, useCallback } from "react";
-import NotePreview from "./NotePreview";
 import { TYPES } from "../constants";
 
-export default function FolderPreview({ id, date, title, notes=[], onDelete, onAddNote, onEdit, onOpen, folderId = null }) {
-  
+export default function FolderPreview({ id, date, title, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, folderId = null }) {
   const noTitleMessage = "Carpeta sin título"
 
   const [name, setName] = useState(title || noTitleMessage)
@@ -20,8 +18,9 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
       titleInputRef.current?.select();
     }
   }, [onEditMode]);
-  
-  function handleDelete() {
+
+  function handleDelete(e) {
+    e.stopPropagation(); // Evita abrir carpeta
     onDelete(id, name, TYPES.FOLDER)
   }
 
@@ -31,7 +30,7 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
         id,
         title: name,
         date: new Date().toISOString(),
-        folderId: folderId 
+        folderId: folderId
       };
       onEdit(updatedFolder);
     }
@@ -51,93 +50,112 @@ export default function FolderPreview({ id, date, title, notes=[], onDelete, onA
     };
   }, [onEditMode, handleSave]);
 
-  function handleClick() {
+  function handleAddNote(e) {
+    e.stopPropagation(); // Evita abrir carpeta
     onAddNote(id)
   }
 
   function handleKeyDown(e) {
     if (e.key === 'Enter') {
-      handleSave(); // Guardar al presionar Enter
+      handleSave();
     } else if (e.key === 'Escape') {
-      setOnEditMode(false); // Cancelar al presionar Escape
+      setOnEditMode(false);
     }
   }
 
   function handleOpen() {
     onOpen(id)
   }
-    
+
   return (
-    <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] max-h-[220px] hover:shadow-lg transition flex flex-col relative">
+    <div
+      onClick={handleOpen}
+      className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] max-h-[220px] hover:shadow-lg transition flex flex-col relative cursor-pointer"
+    >
       <div className="flex items-center mb-2">
         <Folder size={32} className="text-yellow-400 mr-2 shrink-0" />
         <div className="flex-1 pr-16">
-          <input 
-            className="font-bold text-lg truncate outline-none text-yellow-400 w-full"
+          <input
+            className="font-bold text-lg truncate outline-none text-yellow-400 w-full bg-transparent"
             type="text"
             placeholder={noTitleMessage}
-            value={
-              name === noTitleMessage
-              ? ""
-              : (name ?? "")
-            }
+            value={name === noTitleMessage ? "" : (name ?? "")}
             ref={titleInputRef}
-            onChange={
-              (e) => {
-                const currentText = e.target.value
-                const newName = 
-                  currentText === "" 
+            onChange={(e) => {
+              const currentText = e.target.value
+              const newName =
+                currentText === ""
                   ? noTitleMessage
                   : currentText.slice(0, 50)
-                setName(newName)
-              }
-            }
+              setName(newName)
+            }}
             onKeyDown={handleKeyDown}
             readOnly={!onEditMode}
+            onClick={(e) => e.stopPropagation()} // evita abrir carpeta al editar
           />
         </div>
         <button
-            onClick={onEditMode ? handleSave : () => setOnEditMode(true)}
-            className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
-            {icon}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditMode ? handleSave() : setOnEditMode(true)
+          }}
+          className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105"
+        >
+          {icon}
         </button>
-        <button 
+        <button
           onClick={handleDelete}
           disabled={onEditMode}
           className={`absolute top-3 right-3 p-2 transition cursor-pointer transform duration-200 hover:scale-105 
-            ${onEditMode 
-              ? "text-gray-600 cursor-not-allowed"   // gris apagado
-              : "text-gray-400 hover:text-red-500"}`
-          }>
+            ${onEditMode
+              ? "text-gray-600 cursor-not-allowed"
+              : "text-gray-400 hover:text-red-500"}`}
+        >
           <Trash2 size={18} />
         </button>
       </div>
 
       <div className="flex-1 min-h-0 mb-2">
         <div className="grid grid-cols-3 grid-rows-2 h-full gap-2 auto-rows-fr">
-          <button 
-            onClick={handleClick}
-            className="bg-neutral-700 rounded-lg flex items-center justify-center text-3xl font-bold text-white transition cursor-pointer transition transform active:scale-95 duration-150 ease-in-out min-h-0 overflow-hidden">
+          <button
+            onClick={handleAddNote}
+            className="bg-neutral-700 rounded-lg flex items-center justify-center text-3xl font-bold text-white transition cursor-pointer active:scale-95 duration-150 ease-in-out min-h-0 overflow-hidden"
+          >
             +
           </button>
 
-          {notes.slice(0, 4).map((note) => ( // Limitar a 4 notas para que quepan
-            <div key={note.id} className="bg-neutral-700 rounded-lg p-2 overflow-hidden min-h-0 flex flex-col">
-              <h3 className="font-bold text-sm truncate mb-1">{note.title}</h3>
-              <p className="text-xs text-gray-300 truncate flex-1 overflow-hidden">{note.content}</p>
-            </div>
-          ))}
-
-          <button 
-            onClick={handleOpen}
-            className="bg-neutral-700 rounded-lg flex items-center justify-center text-1xl font-bold text-white transition cursor-pointer transition transform active:scale-95 duration-150 ease-in-out min-h-0 overflow-hidden">
-            <FolderOpen />
-          </button>
+          {folderChildren
+            .slice(0, 4)
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .map((item) =>
+              item.type === TYPES.NOTE ? (
+                <div
+                  key={item.id}
+                  className="bg-neutral-700 rounded-lg p-2 overflow-hidden min-h-0 flex flex-col"
+                >
+                  <h3 className="font-bold text-sm truncate mb-1">{item.title}</h3>
+                  <p className="text-xs text-gray-300 truncate flex-1 overflow-hidden">
+                    {item.content}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  key={item.id}
+                  className="bg-neutral-700 rounded-lg flex flex-col items-center p-3 text-white"
+                >
+                  <FolderOpen className="mx-auto" />
+                  <h1 className="w-full text-left truncate text-sm">{item.title}</h1>
+                </div>
+              )
+            )}
         </div>
       </div>
 
       <p className="text-xs text-gray-400 mt-auto">
-        {new Date(date).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}
+        {new Date(date).toLocaleDateString("es-ES", {
+          day: "numeric",
+          month: "long",
+        })}
       </p>
     </div>
   );

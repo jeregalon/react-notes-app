@@ -55,7 +55,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex gap-6 p-3 items-center">
+      <div className="flex gap-10 p-3 items-center">
         <button
           onClick={onNavigateBack}
           disabled={!openedFolder}
@@ -65,19 +65,45 @@ export default function App() {
                   : "text-gray-400 hover:text-yellow-400"}`}>
           <ArrowLeft size={30} />
         </button>
-        <h1 className="text-3xl">Notas</h1>
+        <h1 className="text-3xl">
+          {openedFolder 
+            ? (() => {
+                const folder = folders.find(f => f.id === openedFolder);
+                const title = folder?.title || "";
+                return title.length > 10 ? title.slice(0, 10) + "..." : title;
+              })()
+            : "Notas"}
+        </h1>
         <button 
           onClick={() => onAddNote(openedFolder)}
           className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
           <FileText size={30}/>
-          <h1 className="text-2xl">Nueva nota</h1>
+          <h1 className="text-2xl">
+            {openedFolder
+              ? `Nueva nota en "${(() => {
+                  const folder = folders.find(f => f.id === openedFolder);
+                  const title = folder?.title || "";
+                  return title.length > 10 ? title.slice(0, 10) + "..." : title;
+                })()}"`
+              : "Nueva nota"}
+          </h1>
         </button>
+
         <button 
           onClick={() => addFolder(openedFolder)}
           className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
           <Folder size={30}/>
-          <h1 className="text-2xl">Nueva carpeta</h1>
+          <h1 className="text-2xl">
+            {openedFolder
+              ? `Nueva carpeta en "${(() => {
+                  const folder = folders.find(f => f.id === openedFolder);
+                  const title = folder?.title || "";
+                  return title.length > 10 ? title.slice(0, 10) + "..." : title;
+                })()}"`
+              : "Nueva carpeta"}
+          </h1>
         </button>
+
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -103,7 +129,7 @@ export default function App() {
                 title={item.title}
                 date={item.date}
                 folderId={item.folderId}
-                notes={notes.filter(note => note.folderId === item.id)}
+                folderChildren={[...folders, ...notes].filter(i => i.folderId === item.id)}
                 onDelete={onDelete}
                 onAddNote={onAddNote}
                 onEdit={editFolder}
