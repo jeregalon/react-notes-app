@@ -63,13 +63,17 @@ export default function useNotes() {
   }, [notes, updateParentDate]);
 
   const deleteItem = useCallback((id, type) => {
+    let itemToDelete = null
     if (type === TYPES.NOTE) {
+      itemToDelete = notes.find(note => note.id === id)
       setNotes((prev) => prev.filter(note => note.id !== id));
     } else if (type === TYPES.FOLDER) {
+      itemToDelete = folders.find(folder => folder.id === id)
       setNotes((prev) => prev.filter(note => note.folderId !== id));
       setFolders((prev) => prev.filter(folder => folder.id !== id));
     }
-  }, []);
+    updateParentDate(itemToDelete.folderId)
+  }, [notes, folders, updateParentDate]);
 
   const addFolder = useCallback((folderId) => {
     const now = new Date();
