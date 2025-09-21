@@ -13,6 +13,8 @@ export default function useNotes() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [openedFolder, setOpenedFolder] = useState(null)
+
   // --- Persistencia ---
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
@@ -73,12 +75,33 @@ export default function useNotes() {
     setFolders((prev) => [newFolder, ...prev]);
   }, []);
 
+  // Navegación
+  const openFolder = useCallback((folderId) => {
+    setOpenedFolder(folderId)
+  }, [])
+
+  const onNavigateBack = useCallback(() => {
+    if (!openedFolder) return;
+
+    const currentFolder = folders.find(f => f.id === openedFolder);
+
+    if (!currentFolder) {
+      setOpenedFolder(null);
+      return;
+    }
+
+    setOpenedFolder(currentFolder.folderId || null);
+  }, [folders, openedFolder])
+
   return {
     notes,
     folders,
+    openedFolder,
     addNote,
     deleteItem,
     addFolder,
     editFolder,
+    openFolder,
+    onNavigateBack
   };
 }

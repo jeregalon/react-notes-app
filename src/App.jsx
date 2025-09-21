@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Folder } from 'lucide-react';
+import { FileText, Folder, ArrowLeft } from 'lucide-react';
 import NotePreview from "./components/NotePreview";
 import NoteModal from "./components/NoteModal";
 import DeleteMessage from "./components/DeleteMessage";
@@ -11,10 +11,13 @@ export default function App() {
   const {
     notes,
     folders,
+    openedFolder,
     addNote,
     deleteItem,
     addFolder,
     editFolder,
+    openFolder,
+    onNavigateBack
   } = useNotes();
 
   const initialModalInfo = { isOpen: false, id: null, title: "", content: "", folderId: null };
@@ -22,7 +25,6 @@ export default function App() {
 
   const [modalInfo, setModalInfo] = useState(initialModalInfo);
   const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
-  const [openedFolder, setOpenedFolder] = useState(null)
 
   // --- Funciones de UI ---
   const handleOnSave = (note) => {
@@ -51,13 +53,18 @@ export default function App() {
     setModalInfo({ isOpen: true, id: null, title: "", content: "", folderId });
   };
 
-  const openFolder = (folderId) => {
-    setOpenedFolder(folderId)
-  }
-
   return (
     <div className="min-h-screen bg-black text-white p-8">
       <div className="flex gap-6 p-3 items-center">
+        <button
+          onClick={onNavigateBack}
+          disabled={!openedFolder}
+          className={`cursor-pointer transform transition duration-200 hover:scale-105
+              ${!openedFolder 
+                  ? "text-gray-600 cursor-not-allowed"
+                  : "text-gray-400 hover:text-yellow-400"}`}>
+          <ArrowLeft size={30} />
+        </button>
         <h1 className="text-3xl">Notas</h1>
         <button 
           onClick={() => onAddNote(openedFolder)}
