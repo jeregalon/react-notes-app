@@ -1,14 +1,14 @@
 import { Trash2, Edit2 } from "lucide-react"
 import { TYPES } from "../constants";
 
-export default function NotePreview({ id, title, content, date, onDelete, onEdit }) {
+export default function NotePreview({ id, title, content, date, onDelete, onEdit, folderId = null }) {
   
   function handleDelete() {
     onDelete(id, title, TYPES.NOTE)
   }
 
   function handleEdit() {
-    onEdit(id, title, content)
+    onEdit(id, title, content, folderId)
   }
   
   return (

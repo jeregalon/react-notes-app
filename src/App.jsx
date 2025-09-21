@@ -38,8 +38,8 @@ export default function App() {
     setDeleteInfo({ isOpen: true, id, title, type });
   };
 
-  const onEditNote = (id, title, content) => {
-    setModalInfo({ isOpen: true, id, title, content });
+  const onEditNote = (id, title, content, folderId) => {
+    setModalInfo({ isOpen: true, id, title, content, folderId });
   };
 
   const onConfirm = () => {
@@ -92,6 +92,7 @@ export default function App() {
                 title={item.title}
                 content={item.content}
                 date={item.date}
+                folderId={item.folderId}
                 onDelete={onDelete}
                 onEdit={onEditNote}
               />
@@ -101,6 +102,7 @@ export default function App() {
                 id={item.id}
                 title={item.title}
                 date={item.date}
+                folderId={item.folderId}
                 notes={notes.filter(note => note.folderId === item.id)}
                 onDelete={onDelete}
                 onAddNote={onAddNote}
