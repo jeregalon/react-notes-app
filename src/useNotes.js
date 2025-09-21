@@ -25,13 +25,29 @@ export default function useNotes() {
   }, [folders]);
 
   // --- Funciones ---
+  const updateParentDate = useCallback((parentId) => {
+    if (parentId) {
+      const parent = folders.find(f => f.id === parentId);
+      if (parent) {
+        parent.date = new Date().toISOString()
+        setFolders((prev) =>
+        prev.map((f) =>
+          f.id === parentId ? { ...f, ...parent } : f
+        ))
+        if (parent.folderId) updateParentDate(parent.folderId)
+      }
+    }
+  }, [folders])
+
   const editFolder = useCallback((updatedFolder) => {
+    console.log(updatedFolder)
     setFolders((prev) =>
       prev.map((f) =>
         f.id === updatedFolder.id ? { ...f, ...updatedFolder } : f
       )
     );
-  }, []);
+    updateParentDate(updatedFolder.folderId)
+  }, [updateParentDate]);
 
   const addNote = useCallback((note) => {
     const exists = notes.some(n => n.id === note.id);
@@ -43,16 +59,8 @@ export default function useNotes() {
       setNotes([note, ...notes]);
     }
 
-    if (note.folderId) {
-      const folder = folders.find(f => f.id === note.folderId);
-      if (folder) {
-        editFolder({
-          ...folder,
-          date: new Date().toISOString(),
-        });
-      }
-    }
-  }, [notes, folders, editFolder]);
+    updateParentDate(note.folderId)
+  }, [notes, updateParentDate]);
 
   const deleteItem = useCallback((id, type) => {
     if (type === TYPES.NOTE) {
@@ -73,7 +81,8 @@ export default function useNotes() {
       type: TYPES.FOLDER,
     };
     setFolders((prev) => [newFolder, ...prev]);
-  }, []);
+    updateParentDate(folderId)
+  }, [updateParentDate]);
 
   // Navegación
   const openFolder = useCallback((folderId) => {

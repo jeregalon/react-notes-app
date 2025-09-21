@@ -125,8 +125,8 @@ export default function FolderPreview({ id, date, title, folderChildren = [], on
           </button>
 
           {folderChildren
-            .slice(0, 4)
             .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 5)
             .map((item) =>
               item.type === TYPES.NOTE ? (
                 <div
@@ -144,7 +144,7 @@ export default function FolderPreview({ id, date, title, folderChildren = [], on
                   className="bg-neutral-700 rounded-lg flex flex-col items-center p-3 text-white"
                 >
                   <FolderOpen className="mx-auto" />
-                  <h1 className="w-full text-left truncate text-sm">{item.title}</h1>
+                  <h1 className="w-full text-center truncate text-sm">{item.title}</h1>
                 </div>
               )
             )}
