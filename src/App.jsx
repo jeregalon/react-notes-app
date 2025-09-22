@@ -6,6 +6,7 @@ import DeleteMessage from "./components/DeleteMessage";
 import FolderPreview from "./components/FolderPreview";
 import { TYPES, VIEWS } from './constants';
 import useNotes from "./useNotes";
+import { ListViewFolderPreview } from "./components/ListViewFolderPreview";
 
 export default function App() {
   const {
@@ -17,7 +18,8 @@ export default function App() {
     addFolder,
     editFolder,
     openFolder,
-    onNavigateBack
+    onNavigateBack,
+    deleteArrays
   } = useNotes();
 
   const initialModalInfo = { isOpen: false, id: null, title: "", content: "", folderId: null };
@@ -48,16 +50,19 @@ export default function App() {
     onCancel();
   };
 
+  const restartArrays = () => {
+    deleteArrays()
+  }
+
   const onCancel = () => setDeleteInfo(initialDeleteInfo);
 
   const onAddNote = (folderId) => {
     setModalInfo({ isOpen: true, id: null, title: "", content: "", folderId });
   };
 
-  // --- Render ---
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      {/* Header */}
+      <button onClick={restartArrays} disabled={true}>Reiniciar</button>
       <div className="flex gap-10 p-3 items-center justify-between">
         <div className="flex gap-10 items-center">
           <button
@@ -111,7 +116,6 @@ export default function App() {
           </button>
         </div>
 
-        {/* Botones de vista */}
         <div className="flex gap-2">
           <button
             onClick={() => setView(VIEWS.GRID)}
@@ -132,9 +136,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Contenido */}
       {view === VIEWS.GRID ? (
-        // --- Vista Mosaico ---
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {[...folders, ...notes]
             .filter(item => item.folderId === openedFolder)
@@ -148,6 +150,7 @@ export default function App() {
                   content={item.content}
                   date={item.date}
                   folderId={item.folderId}
+                  view={view}
                   onDelete={onDelete}
                   onEdit={onEditNote}
                 />
@@ -159,6 +162,7 @@ export default function App() {
                   date={item.date}
                   folderId={item.folderId}
                   folderChildren={[...folders, ...notes].filter(i => i.folderId === item.id)}
+                  view={view}
                   onDelete={onDelete}
                   onAddNote={onAddNote}
                   onEdit={editFolder}
@@ -168,59 +172,47 @@ export default function App() {
           )}
         </div>
       ) : (
-        // --- Vista Lista ---
-        <div className="flex flex-col gap-6">
-          {/* Notas sueltas */}
-          <section>
-            <h2 className="text-xl font-bold mb-2">Notas sueltas</h2>
-            <div className="flex overflow-x-auto gap-4 pb-2">
+        <div className="flex flex-col divide-y divide-gray-700">
+
+          <div className="py-4 overflow-x-auto">
+            <div className="flex gap-4 w-max">
               {notes
-                .filter(n => !n.folderId)
+                .filter(note => note.folderId === openedFolder)
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .map(note => (
-                  <div key={note.id} className="flex-shrink-0 min-w-[250px]">
-                    <NotePreview
-                      id={note.id}
-                      title={note.title}
-                      content={note.content}
-                      date={note.date}
-                      folderId={note.folderId}
-                      onDelete={onDelete}
-                      onEdit={onEditNote}
-                    />
-                  </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Carpetas con sus notas */}
-          {folders.map(folder => (
-            <section key={folder.id}>
-              <h2 className="text-xl font-bold text-yellow-400 mb-2">{folder.title}</h2>
-              <div className="flex overflow-x-auto gap-4 pb-2">
-                {notes
-                  .filter(n => n.folderId === folder.id)
-                  .sort((a, b) => new Date(b.date) - new Date(a.date))
-                  .map(note => (
-                    <div key={note.id} className="flex-shrink-0 min-w-[250px]">
-                      <NotePreview
-                        id={note.id}
-                        title={note.title}
-                        content={note.content}
-                        date={note.date}
-                        folderId={note.folderId}
-                        onDelete={onDelete}
-                        onEdit={onEditNote}
-                      />
-                    </div>
+                  <NotePreview
+                    key={note.id}
+                    id={note.id}
+                    title={note.title}
+                    content={note.content}
+                    date={note.date}
+                    folderId={note.folderId}
+                    view={view}
+                    onDelete={onDelete}
+                    onEdit={onEditNote}
+                  />
                 ))}
-              </div>
-            </section>
-          ))}
+            </div>
+          </div>
+
+          {folders
+            .filter(folder => folder.folderId === openedFolder)
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .map(folder => (
+              <ListViewFolderPreview
+                key={folder.id}
+                folder={folder}
+                allNotesAndFolders={[...folders, ...notes]}
+                onDelete={onDelete}
+                onEditNote={onEditNote}
+                onAddNote={onAddNote}
+                onEditFolder={editFolder}
+                onOpen={openFolder}
+              />
+            ))}
         </div>
       )}
 
-      {/* Modales */}
       {modalInfo.isOpen && (
         <NoteModal
           id={modalInfo.id}

@@ -40,7 +40,6 @@ export default function useNotes() {
   }, [folders])
 
   const editFolder = useCallback((updatedFolder) => {
-    console.log(updatedFolder)
     setFolders((prev) =>
       prev.map((f) =>
         f.id === updatedFolder.id ? { ...f, ...updatedFolder } : f
@@ -127,6 +126,11 @@ export default function useNotes() {
     setOpenedFolder(currentFolder.folderId || null);
   }, [folders, openedFolder])
 
+  const deleteArrays = useCallback(() => {
+    setFolders([])
+    setNotes([])
+  }, [])
+
   return {
     notes,
     folders,
@@ -136,6 +140,7 @@ export default function useNotes() {
     addFolder,
     editFolder,
     openFolder,
-    onNavigateBack
+    onNavigateBack,
+    deleteArrays
   };
 }

@@ -1,8 +1,8 @@
 import { Folder, Trash2, Edit2, Check, FolderOpen } from "lucide-react"
 import { useEffect, useState, useRef, useCallback } from "react";
-import { TYPES } from "../constants";
+import { TYPES, VIEWS } from "../constants";
 
-export default function FolderPreview({ id, date, title, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, folderId = null }) {
+export default function FolderPreview({ id, date, title, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, folderId = null, view = VIEWS.GRID }) {
   const noTitleMessage = "Carpeta sin título"
 
   const [name, setName] = useState(title || noTitleMessage)
@@ -70,7 +70,12 @@ export default function FolderPreview({ id, date, title, folderChildren = [], on
   return (
     <div
       onClick={handleOpen}
-      className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] max-h-[220px] hover:shadow-lg transition flex flex-col relative cursor-pointer"
+      className={`bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] max-h-[220px] hover:shadow-lg transition flex flex-col relative cursor-pointer
+        ${
+          view === VIEWS.LIST
+          ? "w-80"
+          : ""
+        }`}
     >
       <div className="flex items-center mb-2">
         <Folder size={32} className="text-yellow-400 mr-2 shrink-0" />

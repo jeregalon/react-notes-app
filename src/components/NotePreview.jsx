@@ -1,7 +1,7 @@
 import { Trash2, Edit2 } from "lucide-react"
-import { TYPES } from "../constants";
+import { TYPES, VIEWS } from "../constants";
 
-export default function NotePreview({ id, title, content, date, onDelete, onEdit, folderId = null }) {
+export default function NotePreview({ id, title, content, date, onDelete, onEdit, folderId = null, view = VIEWS.GRID }) {
   
   function handleDelete() {
     onDelete(id, title, TYPES.NOTE)
@@ -12,7 +12,11 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
   }
   
   return (
-    <div className="bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] hover:shadow-lg transition flex flex-col relative">
+    <div className={`bg-neutral-800 rounded-lg p-4 shadow-md min-h-[220px] hover:shadow-lg transition flex flex-col relative
+        ${view === VIEWS.LIST
+          ? "w-80"
+          : ""
+        }`}>
       <button
         onClick={handleEdit}
         className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
