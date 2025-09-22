@@ -54,8 +54,10 @@ export default function App() {
     setModalInfo({ isOpen: true, id: null, title: "", content: "", folderId });
   };
 
+  // --- Render ---
   return (
     <div className="min-h-screen bg-black text-white p-8">
+      {/* Header */}
       <div className="flex gap-10 p-3 items-center justify-between">
         <div className="flex gap-10 items-center">
           <button
@@ -88,7 +90,7 @@ export default function App() {
                     const folder = folders.find(f => f.id === openedFolder);
                     const title = folder?.title || "";
                     return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                  })()}"`
+                  })()}"` 
                 : "Nueva nota"}
             </h1>
           </button>
@@ -103,25 +105,26 @@ export default function App() {
                     const folder = folders.find(f => f.id === openedFolder);
                     const title = folder?.title || "";
                     return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                  })()}"`
+                  })()}"` 
                 : "Nueva carpeta"}
             </h1>
           </button>
         </div>
 
+        {/* Botones de vista */}
         <div className="flex gap-2">
           <button
-            onClick={() => setView("grid")}
+            onClick={() => setView(VIEWS.GRID)}
             className={`p-2 rounded-lg ${
-              view === "grid" ? "bg-blue-600 text-white" : "bg-black"
+              view === VIEWS.GRID ? "bg-blue-600 text-white" : "bg-black"
             }`}
           >
             <LayoutGrid size={20} />
           </button>
           <button
-            onClick={() => setView("list")}
+            onClick={() => setView(VIEWS.LIST)}
             className={`p-2 rounded-lg ${
-              view === "list" ? "bg-blue-600 text-white" : "bg-black"
+              view === VIEWS.LIST ? "bg-blue-600 text-white" : "bg-black"
             }`}
           >
             <List size={20} />
@@ -129,40 +132,95 @@ export default function App() {
         </div>
       </div>
 
+      {/* Contenido */}
+      {view === VIEWS.GRID ? (
+        // --- Vista Mosaico ---
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...folders, ...notes]
+            .filter(item => item.folderId === openedFolder)
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .map((item) =>
+              item.type === TYPES.NOTE ? (
+                <NotePreview
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  content={item.content}
+                  date={item.date}
+                  folderId={item.folderId}
+                  onDelete={onDelete}
+                  onEdit={onEditNote}
+                />
+              ) : (
+                <FolderPreview
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  date={item.date}
+                  folderId={item.folderId}
+                  folderChildren={[...folders, ...notes].filter(i => i.folderId === item.id)}
+                  onDelete={onDelete}
+                  onAddNote={onAddNote}
+                  onEdit={editFolder}
+                  onOpen={openFolder}
+                />
+              )
+          )}
+        </div>
+      ) : (
+        // --- Vista Lista ---
+        <div className="flex flex-col gap-6">
+          {/* Notas sueltas */}
+          <section>
+            <h2 className="text-xl font-bold mb-2">Notas sueltas</h2>
+            <div className="flex overflow-x-auto gap-4 pb-2">
+              {notes
+                .filter(n => !n.folderId)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(note => (
+                  <div key={note.id} className="flex-shrink-0 min-w-[250px]">
+                    <NotePreview
+                      id={note.id}
+                      title={note.title}
+                      content={note.content}
+                      date={note.date}
+                      folderId={note.folderId}
+                      onDelete={onDelete}
+                      onEdit={onEditNote}
+                    />
+                  </div>
+              ))}
+            </div>
+          </section>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {[...folders, ...notes]
-          .filter(item => item.folderId === openedFolder)
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .map((item) =>
-            item.type === TYPES.NOTE ? (
-              <NotePreview
-                key={item.id}
-                id={item.id}
-                title={item.title}
-                content={item.content}
-                date={item.date}
-                folderId={item.folderId}
-                onDelete={onDelete}
-                onEdit={onEditNote}
-              />
-            ) : (
-              <FolderPreview
-                key={item.id}
-                id={item.id}
-                title={item.title}
-                date={item.date}
-                folderId={item.folderId}
-                folderChildren={[...folders, ...notes].filter(i => i.folderId === item.id)}
-                onDelete={onDelete}
-                onAddNote={onAddNote}
-                onEdit={editFolder}
-                onOpen={openFolder}
-              />
-            )
-        )}
-      </div>
+          {/* Carpetas con sus notas */}
+          {folders.map(folder => (
+            <section key={folder.id}>
+              <h2 className="text-xl font-bold text-yellow-400 mb-2">{folder.title}</h2>
+              <div className="flex overflow-x-auto gap-4 pb-2">
+                {notes
+                  .filter(n => n.folderId === folder.id)
+                  .sort((a, b) => new Date(b.date) - new Date(a.date))
+                  .map(note => (
+                    <div key={note.id} className="flex-shrink-0 min-w-[250px]">
+                      <NotePreview
+                        id={note.id}
+                        title={note.title}
+                        content={note.content}
+                        date={note.date}
+                        folderId={note.folderId}
+                        onDelete={onDelete}
+                        onEdit={onEditNote}
+                      />
+                    </div>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
 
+      {/* Modales */}
       {modalInfo.isOpen && (
         <NoteModal
           id={modalInfo.id}
