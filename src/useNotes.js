@@ -63,17 +63,38 @@ export default function useNotes() {
   }, [notes, updateParentDate]);
 
   const deleteItem = useCallback((id, type) => {
-    let itemToDelete = null
-    if (type === TYPES.NOTE) {
-      itemToDelete = notes.find(note => note.id === id)
-      setNotes((prev) => prev.filter(note => note.id !== id));
-    } else if (type === TYPES.FOLDER) {
-      itemToDelete = folders.find(folder => folder.id === id)
-      setNotes((prev) => prev.filter(note => note.folderId !== id));
-      setFolders((prev) => prev.filter(folder => folder.id !== id));
+  if (type === TYPES.NOTE) {
+    setNotes((prevNotes) => {
+      const noteToDelete = prevNotes.find(n => n.id === id);
+      const filtered = prevNotes.filter(n => n.id !== id);
+      if (noteToDelete) updateParentDate(noteToDelete.folderId);
+      return filtered;
+    });
+    return;
+  }
+  if (type === TYPES.FOLDER) {
+    const folderIdsToDelete = new Set();
+    const stack = [id];
+    while (stack.length) {
+      const current = stack.pop();
+      if (!folderIdsToDelete.has(current)) {
+        folderIdsToDelete.add(current);
+        for (const f of folders) {
+          if (f.folderId === current && !folderIdsToDelete.has(f.id)) {
+            stack.push(f.id);
+          }
+        }
+      }
     }
-    updateParentDate(itemToDelete.folderId)
-  }, [notes, folders, updateParentDate]);
+    setNotes((prevNotes) => prevNotes.filter(n => !folderIdsToDelete.has(n.folderId)));
+    setFolders((prevFolders) => prevFolders.filter(f => !folderIdsToDelete.has(f.id)));
+    const deletedFolder = folders.find(f => f.id === id);
+    if (deletedFolder) {
+      updateParentDate(deletedFolder.folderId);
+    }
+    return;
+  }
+}, [folders, updateParentDate]);
 
   const addFolder = useCallback((folderId) => {
     const now = new Date();
