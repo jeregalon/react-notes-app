@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { FileText, Folder, ArrowLeft } from 'lucide-react';
+import { FileText, Folder, ArrowLeft, LayoutGrid, List } from 'lucide-react';
 import NotePreview from "./components/NotePreview";
 import NoteModal from "./components/NoteModal";
 import DeleteMessage from "./components/DeleteMessage";
 import FolderPreview from "./components/FolderPreview";
-import { TYPES } from './constants';
+import { TYPES, VIEWS } from './constants';
 import useNotes from "./useNotes";
 
 export default function App() {
@@ -25,6 +25,7 @@ export default function App() {
 
   const [modalInfo, setModalInfo] = useState(initialModalInfo);
   const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
+  const [view, setView] = useState(VIEWS.GRID);
 
   // --- Funciones de UI ---
   const handleOnSave = (note) => {
@@ -55,56 +56,79 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <div className="flex gap-10 p-3 items-center">
-        <button
-          onClick={onNavigateBack}
-          disabled={!openedFolder}
-          className={`cursor-pointer transform transition duration-200 hover:scale-105
-              ${!openedFolder 
-                  ? "text-gray-600 cursor-not-allowed"
-                  : "text-gray-400 hover:text-yellow-400"}`}>
-          <ArrowLeft size={30} />
-        </button>
-        <h1 className="text-3xl">
-          {openedFolder 
-            ? (() => {
-                const folder = folders.find(f => f.id === openedFolder);
-                const title = folder?.title || "";
-                return title.length > 10 ? title.slice(0, 10) + "..." : title;
-              })()
-            : "Notas"}
-        </h1>
-        <button 
-          onClick={() => onAddNote(openedFolder)}
-          className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
-          <FileText size={30}/>
-          <h1 className="text-2xl">
-            {openedFolder
-              ? `Nueva nota en "${(() => {
+      <div className="flex gap-10 p-3 items-center justify-between">
+        <div className="flex gap-10 items-center">
+          <button
+            onClick={onNavigateBack}
+            disabled={!openedFolder}
+            className={`cursor-pointer transform transition duration-200 hover:scale-105
+                ${!openedFolder 
+                    ? "text-gray-600 cursor-not-allowed"
+                    : "text-gray-400 hover:text-yellow-400"}`}>
+            <ArrowLeft size={30} />
+          </button>
+
+          <h1 className="text-3xl">
+            {openedFolder 
+              ? (() => {
                   const folder = folders.find(f => f.id === openedFolder);
                   const title = folder?.title || "";
                   return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                })()}"`
-              : "Nueva nota"}
+                })()
+              : "Notas"}
           </h1>
-        </button>
 
-        <button 
-          onClick={() => addFolder(openedFolder)}
-          className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
-          <Folder size={30}/>
-          <h1 className="text-2xl">
-            {openedFolder
-              ? `Nueva carpeta en "${(() => {
-                  const folder = folders.find(f => f.id === openedFolder);
-                  const title = folder?.title || "";
-                  return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                })()}"`
-              : "Nueva carpeta"}
-          </h1>
-        </button>
+          <button 
+            onClick={() => onAddNote(openedFolder)}
+            className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
+            <FileText size={30}/>
+            <h1 className="text-2xl">
+              {openedFolder
+                ? `Nueva nota en "${(() => {
+                    const folder = folders.find(f => f.id === openedFolder);
+                    const title = folder?.title || "";
+                    return title.length > 10 ? title.slice(0, 10) + "..." : title;
+                  })()}"`
+                : "Nueva nota"}
+            </h1>
+          </button>
 
+          <button 
+            onClick={() => addFolder(openedFolder)}
+            className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
+            <Folder size={30}/>
+            <h1 className="text-2xl">
+              {openedFolder
+                ? `Nueva carpeta en "${(() => {
+                    const folder = folders.find(f => f.id === openedFolder);
+                    const title = folder?.title || "";
+                    return title.length > 10 ? title.slice(0, 10) + "..." : title;
+                  })()}"`
+                : "Nueva carpeta"}
+            </h1>
+          </button>
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => setView("grid")}
+            className={`p-2 rounded-lg ${
+              view === "grid" ? "bg-blue-600 text-white" : "bg-black"
+            }`}
+          >
+            <LayoutGrid size={20} />
+          </button>
+          <button
+            onClick={() => setView("list")}
+            className={`p-2 rounded-lg ${
+              view === "list" ? "bg-blue-600 text-white" : "bg-black"
+            }`}
+          >
+            <List size={20} />
+          </button>
+        </div>
       </div>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {[...folders, ...notes]
