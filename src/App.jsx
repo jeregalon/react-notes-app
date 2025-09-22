@@ -157,10 +157,7 @@ export default function App() {
               ) : (
                 <FolderPreview
                   key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  date={item.date}
-                  folderId={item.folderId}
+                  folder={item}
                   folderChildren={[...folders, ...notes].filter(i => i.folderId === item.id)}
                   view={view}
                   onDelete={onDelete}

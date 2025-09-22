@@ -1,10 +1,15 @@
+import { Folder, Trash2, Edit2, Check, FolderOpen } from "lucide-react"
 import { TYPES, VIEWS } from '../constants';
+import useFolders from "../useFolders"
 import NotePreview from "./NotePreview";
 import FolderPreview from "./FolderPreview";
 
 export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditNote, onAddNote, onEditFolder, onOpen, folder=null }) {
+    
+    
     return(
         <div className="py-4 overflow-x-auto">
+            
             <h2 className="text-xl font-bold mb-2">{folder.title}</h2>
             <div className="flex gap-4 w-max">
                 {allNotesAndFolders
@@ -26,10 +31,7 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
                     ) : (
                     <FolderPreview
                         key={item.id}
-                        id={item.id}
-                        title={item.title}
-                        date={item.date}
-                        folderId={item.folderId}
+                        folder={item}
                         folderChildren={allNotesAndFolders.filter(i => i.folderId === item.id)}
                         view={VIEWS.LIST}
                         onDelete={onDelete}

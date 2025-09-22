@@ -40,6 +40,7 @@ export default function useNotes() {
   }, [folders])
 
   const editFolder = useCallback((updatedFolder) => {
+    console.log(updatedFolder)
     setFolders((prev) =>
       prev.map((f) =>
         f.id === updatedFolder.id ? { ...f, ...updatedFolder } : f
