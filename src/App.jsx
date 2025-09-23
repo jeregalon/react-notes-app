@@ -7,6 +7,7 @@ import FolderPreview from "./components/FolderPreview";
 import { TYPES, VIEWS } from './constants';
 import useNotes from "./useNotes";
 import { ListViewFolderPreview } from "./components/ListViewFolderPreview";
+import { NewButton } from "./components/NewButton";
 
 export default function App() {
   const {
@@ -89,35 +90,22 @@ export default function App() {
               : "Notas"}
           </h1>
 
-          <button 
-            onClick={() => onAddNote(openedFolder)}
-            className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
-            <FileText size={30}/>
-            <h1 className="text-2xl">
-              {openedFolder
-                ? `Nueva nota en "${(() => {
-                    const folder = folders.find(f => f.id === openedFolder);
-                    const title = folder?.title || "";
-                    return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                  })()}"` 
-                : "Nueva nota"}
-            </h1>
-          </button>
+          <NewButton 
+            onClick = {() => onAddNote(openedFolder)}
+            icon = {<FileText size={30}/>}
+            text = {"Nueva nota"}
+            folder = {folders.find(f => f.id === openedFolder) ?? null}
+            maxLength = {10}
+          />
 
-          <button 
-            onClick={() => addFolder(openedFolder)}
-            className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center">
-            <Folder size={30}/>
-            <h1 className="text-2xl">
-              {openedFolder
-                ? `Nueva carpeta en "${(() => {
-                    const folder = folders.find(f => f.id === openedFolder);
-                    const title = folder?.title || "";
-                    return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                  })()}"` 
-                : "Nueva carpeta"}
-            </h1>
-          </button>
+          <NewButton 
+            onClick = {() => addFolder(openedFolder)}
+            icon = {<Folder size={30}/>}
+            text = {"Nueva carpeta"}
+            folder = {folders.find(f => f.id === openedFolder) ?? null}
+            maxLength = {10}
+          />
+
         </div>
 
         <div className="flex gap-2">

@@ -3,6 +3,7 @@ import { TYPES, VIEWS, NO_TITLE_MESSAGE } from '../constants';
 import useFolders from "../useFolders"
 import NotePreview from "./NotePreview";
 import FolderPreview from "./FolderPreview";
+import { NewButton } from "./NewButton";
 
 export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditNote, onAddNote, onEdit, onOpen, onAddFolder, folder=null }) {
     
@@ -66,30 +67,22 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
                     <Trash2 size={22} />
                 </button>
 
-                <button 
-                    onClick={handleAddNote}
-                    className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center ml-8">
-                    <FileText size={30}/>
-                    <h1 className="text-2xl">
-                        {`Nueva nota en "${(() => {
-                            const title = folder?.title || "";
-                            return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                        })()}"`}
-                    </h1>
-                </button>
+                <NewButton 
+                    onClick = {handleAddNote}
+                    icon = {<FileText size={30}/>}
+                    text = {"Nueva nota"}
+                    folder = {folder}
+                    maxLength = {10}
+                />
 
-                <button 
-                    onClick={handleAddFolder}
-                    className="flex cursor-pointer gap-1 transform transition duration-200 hover:scale-105 items-center ml-8">
-                    <Folder size={30}/>
-                    <h1 className="text-2xl">
-                        {`Nueva carpeta en "${(() => {
-                            const title = folder?.title || "";
-                            return title.length > 10 ? title.slice(0, 10) + "..." : title;
-                        })()}"`}
-                    </h1>
-                </button>
-                </div>
+                <NewButton 
+                    onClick = {handleAddFolder}
+                    icon = {<Folder size={30}/>}
+                    text = {"Nueva carpeta"}
+                    folder = {folder}
+                    maxLength = {10}
+                />
+            </div>
 
             
             <div className="flex gap-4 w-max">
