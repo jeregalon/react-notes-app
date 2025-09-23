@@ -1,4 +1,4 @@
-import { Folder, Trash2, Edit2, Check, FolderOpen } from "lucide-react";
+import { Folder, Trash2, Edit2, Check, FolderOpen, FileText } from "lucide-react";
 import { TYPES, VIEWS, NO_TITLE_MESSAGE } from "../constants";
 import useFolders from "../useFolders";
 
@@ -82,7 +82,7 @@ export default function FolderPreview({ folder, folderChildren = [], onDelete, o
 
           {folderChildren
             .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 5)
+            .slice(0, 4)
             .map((item) =>
               item.type === TYPES.NOTE ? (
                 <div
@@ -104,6 +104,16 @@ export default function FolderPreview({ folder, folderChildren = [], onDelete, o
                 </div>
               )
             )}
+
+            {folderChildren.length > 4 &&
+            <div className="bg-neutral-700 rounded-lg p-2 overflow-hidden min-h-0 flex flex-col">
+              <div className="flex justify-center items-center gap-x-1">
+                <FileText className="w-5 h-5 text-gray-300" />
+                <FolderOpen className="w-5 h-5 text-gray-300" />
+                ...
+              </div>
+              <h1 className="w-full text-center truncate text-sm">{`${folderChildren.length - 4} más`}</h1>
+            </div>}
         </div>
       </div>
 
