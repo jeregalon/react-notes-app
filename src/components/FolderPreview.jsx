@@ -2,15 +2,8 @@ import { Folder, Trash2, Edit2, Check, FolderOpen } from "lucide-react";
 import { TYPES, VIEWS, NO_TITLE_MESSAGE } from "../constants";
 import useFolders from "../useFolders";
 
-export default function FolderPreview({
-  folder,
-  folderChildren = [],
-  onDelete,
-  onAddNote,
-  onEdit,
-  onOpen,
-  view = VIEWS.GRID,
-}) {
+export default function FolderPreview({ folder, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, view = VIEWS.GRID, }) 
+{
   const {
     name,
     setName,

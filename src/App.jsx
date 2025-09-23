@@ -60,6 +60,10 @@ export default function App() {
     setModalInfo({ isOpen: true, id: null, title: "", content: "", folderId });
   };
 
+  const onAddFolder = (folderId) => {
+    addFolder(folderId)
+  }
+
   return (
     <div className="min-h-screen bg-black text-white p-8">
       <button onClick={restartArrays} disabled={true}>Reiniciar</button>
@@ -203,7 +207,8 @@ export default function App() {
                 onDelete={onDelete}
                 onEditNote={onEditNote}
                 onAddNote={onAddNote}
-                onEditFolder={editFolder}
+                onAddFolder={onAddFolder}
+                onEdit={editFolder}
                 onOpen={openFolder}
               />
             ))}

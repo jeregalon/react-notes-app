@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { NO_TITLE_MESSAGE, TYPES } from "./constants";
 
-export default function useFolders({ folder, onEdit, onDelete, onAddNote, onOpen }) {
+export default function useFolders({ folder, onEdit, onDelete, onAddNote, onAddFolder, onOpen }) {
   const [name, setName] = useState(folder.title || NO_TITLE_MESSAGE);
   const [onEditMode, setOnEditMode] = useState(false);
 
@@ -57,6 +57,15 @@ export default function useFolders({ folder, onEdit, onDelete, onAddNote, onOpen
     [folder.id, onAddNote]
   );
 
+  // agregar carpeta
+  const handleAddFolder = useCallback(
+    (e) => {
+      e.stopPropagation();
+      onAddFolder(folder.id);
+    },
+    [folder.id, onAddFolder]
+  );
+
   // enter => guardar, escape => cancelar edición
   const handleKeyDown = useCallback(
     (e) => {
@@ -84,6 +93,7 @@ export default function useFolders({ folder, onEdit, onDelete, onAddNote, onOpen
     handleSave,
     handleDelete,
     handleAddNote,
+    handleAddFolder,
     handleKeyDown,
     handleOpen,
   };
