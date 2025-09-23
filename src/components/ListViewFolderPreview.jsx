@@ -1,11 +1,11 @@
 import { Folder, Trash2, Edit2, Check, FolderOpen, FileText } from "lucide-react"
-import { TYPES, VIEWS, NO_TITLE_MESSAGE } from '../constants';
+import { TYPES, VIEWS, NO_TITLE_MESSAGE, sortElements } from '../constants';
 import useFolders from "../useFolders"
 import NotePreview from "./NotePreview";
 import FolderPreview from "./FolderPreview";
 import { NewButton } from "./NewButton";
 
-export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditNote, onAddNote, onEdit, onOpen, onAddFolder, folder=null }) {
+export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditNote, onAddNote, onEdit, onOpen, onAddFolder, folder=null, sort, order }) {
     
     const {
     name,
@@ -86,9 +86,8 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
 
             
             <div className="flex gap-4 w-max">
-                {allNotesAndFolders
+                {sortElements(allNotesAndFolders, sort, order)
                 .filter(item => item.folderId === folder.id)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .map(item =>
                     item.type === TYPES.NOTE ? (
                     <NotePreview
@@ -108,6 +107,8 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
                         folder={item}
                         folderChildren={allNotesAndFolders.filter(i => i.folderId === item.id)}
                         view={VIEWS.LIST}
+                        sort={sort}
+                        order={order}
                         onDelete={onDelete}
                         onAddNote={onAddNote}
                         onEdit={onEdit}

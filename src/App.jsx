@@ -4,10 +4,11 @@ import NotePreview from "./components/NotePreview";
 import NoteModal from "./components/NoteModal";
 import DeleteMessage from "./components/DeleteMessage";
 import FolderPreview from "./components/FolderPreview";
-import { TYPES, VIEWS } from './constants';
+import { TYPES, VIEWS, SORT_BY, ORDER, sortElements } from './constants';
 import useNotes from "./useNotes";
 import { ListViewFolderPreview } from "./components/ListViewFolderPreview";
 import { NewButton } from "./components/NewButton";
+import SortSelector from "./components/SortSelector";
 
 export default function App() {
   const {
@@ -29,6 +30,9 @@ export default function App() {
   const [modalInfo, setModalInfo] = useState(initialModalInfo);
   const [deleteInfo, setDeleteInfo] = useState(initialDeleteInfo);
   const [view, setView] = useState(VIEWS.GRID);
+
+  const [sort, setSort] = useState(SORT_BY.DATE);
+  const [order, setOrder] = useState(ORDER.DESC);
 
   // --- Funciones de UI ---
   const handleOnSave = (note) => {
@@ -64,6 +68,15 @@ export default function App() {
   const onAddFolder = (folderId) => {
     addFolder(folderId)
   }
+
+  const onChangeSort = (newSort) => {
+    if (newSort != sort) setSort(newSort)
+  }
+
+  const onChangeOrder = (newOrder) => {
+    if (newOrder != order) setOrder(newOrder)
+  }
+
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -108,6 +121,17 @@ export default function App() {
 
         </div>
 
+        <div className="flex col gap-x-4">
+          <h1 className="text-3xl">Ordenar por:</h1>
+          <SortSelector 
+            onChangeSort={onChangeSort}
+            onChangeOrder={onChangeOrder}
+            sort={sort}
+            order={order}
+          />
+        </div>
+        
+        {/*Toggle para elegir entre vistas*/}
         <div className="flex gap-2">
           <button
             onClick={() => setView(VIEWS.GRID)}
@@ -130,9 +154,8 @@ export default function App() {
 
       {view === VIEWS.GRID ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[...folders, ...notes]
+          {sortElements([...folders, ...notes], sort, order)
             .filter(item => item.folderId === openedFolder)
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map((item) =>
               item.type === TYPES.NOTE ? (
                 <NotePreview
@@ -152,6 +175,8 @@ export default function App() {
                   folder={item}
                   folderChildren={[...folders, ...notes].filter(i => i.folderId === item.id)}
                   view={view}
+                  sort={sort}
+                  order={order}
                   onDelete={onDelete}
                   onAddNote={onAddNote}
                   onEdit={editFolder}
@@ -165,9 +190,8 @@ export default function App() {
 
           <div className="py-4 overflow-x-auto">
             <div className="flex gap-4 w-max">
-              {notes
+              {sortElements(notes, sort, order)
                 .filter(note => note.folderId === openedFolder)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .map(note => (
                   <NotePreview
                     key={note.id}
@@ -184,14 +208,15 @@ export default function App() {
             </div>
           </div>
 
-          {folders
+          {sortElements(folders, sort, order)
             .filter(folder => folder.folderId === openedFolder)
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map(folder => (
               <ListViewFolderPreview
                 key={folder.id}
                 folder={folder}
                 allNotesAndFolders={[...folders, ...notes]}
+                sort={sort}
+                order={order}
                 onDelete={onDelete}
                 onEditNote={onEditNote}
                 onAddNote={onAddNote}

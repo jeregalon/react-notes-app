@@ -1,8 +1,8 @@
 import { Folder, Trash2, Edit2, Check, FolderOpen, FileText } from "lucide-react";
-import { TYPES, VIEWS, NO_TITLE_MESSAGE } from "../constants";
+import { TYPES, VIEWS, NO_TITLE_MESSAGE, sortElements } from "../constants";
 import useFolders from "../useFolders";
 
-export default function FolderPreview({ folder, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, view = VIEWS.GRID, }) 
+export default function FolderPreview({ folder, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, view = VIEWS.GRID, sort, order }) 
 {
   const {
     name,
@@ -80,8 +80,7 @@ export default function FolderPreview({ folder, folderChildren = [], onDelete, o
             +
           </button>
 
-          {folderChildren
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
+          {sortElements(folderChildren, sort, order)
             .slice(0, 4)
             .map((item) =>
               item.type === TYPES.NOTE ? (
