@@ -1,13 +1,19 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { NO_TITLE_MESSAGE, TYPES } from "./constants";
+import { NO_TITLE_MESSAGE } from "./constants";
 
 export default function useFolders({ folder, onEdit, onDelete, onAddNote, onAddFolder, onOpen }) {
-  const [name, setName] = useState(folder.title || NO_TITLE_MESSAGE);
-  const [onEditMode, setOnEditMode] = useState(false);
+  
+  const [name, setName] = useState(() => (folder?.title));
+  const [onEditMode, setOnEditMode] = useState(() => (!folder?.title)); // true si NO tiene title (carpeta nueva)
 
   const titleInputRef = useRef(null);
 
-  // focus automático al entrar en edición
+  useEffect(() => {
+    setName(folder?.title ?? null);
+    setOnEditMode(!folder?.title);
+  }, [folder?.id, folder?.title]); // <- solo cuando cambia el id de la carpeta
+
+  // focus automático cuando entra en edición
   useEffect(() => {
     if (onEditMode) {
       titleInputRef.current?.focus();
@@ -15,20 +21,22 @@ export default function useFolders({ folder, onEdit, onDelete, onAddNote, onAddF
     }
   }, [onEditMode]);
 
-  // guardar cambios
+  // guardar cambios: normalizamos el nombre y solo llamamos onEdit si hubo cambio
   const handleSave = useCallback(() => {
-    if (name !== folder.title) {
+    const finalName = (!name || name.trim() === "") ? "Nueva carpeta" : name;
+    if (finalName !== folder.title) {
       const updatedFolder = {
         ...folder,
-        title: name,
+        title: finalName,
         date: new Date().toISOString(),
       };
       onEdit(updatedFolder);
     }
+    setName(finalName);      // asegurar que no quede null
     setOnEditMode(false);
   }, [name, folder, onEdit]);
 
-  // clic fuera del input => guardar
+  // clic fuera => guardar
   useEffect(() => {
     function handleClickOutside(e) {
       if (onEditMode && titleInputRef.current && !titleInputRef.current.contains(e.target)) {
@@ -39,47 +47,29 @@ export default function useFolders({ folder, onEdit, onDelete, onAddNote, onAddF
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onEditMode, handleSave]);
 
-  // eliminar carpeta
-  const handleDelete = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onDelete(folder.id, name, TYPES.FOLDER);
-    },
-    [folder.id, name, onDelete]
-  );
+  const handleDelete = useCallback((e) => {
+    e.stopPropagation();
+    onDelete(folder.id, name, "folder");
+  }, [folder.id, name, onDelete]);
 
-  // agregar nota
-  const handleAddNote = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onAddNote(folder.id);
-    },
-    [folder.id, onAddNote]
-  );
+  const handleAddNote = useCallback((e) => {
+    e.stopPropagation();
+    onAddNote(folder.id);
+  }, [folder.id, onAddNote]);
 
-  // agregar carpeta
-  const handleAddFolder = useCallback(
-    (e) => {
-      e.stopPropagation();
-      onAddFolder(folder.id);
-    },
-    [folder.id, onAddFolder]
-  );
+  const handleAddFolder = useCallback((e) => {
+    e.stopPropagation();
+    onAddFolder(folder.id);
+  }, [folder.id, onAddFolder]);
 
-  // enter => guardar, escape => cancelar edición
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === "Enter") {
-        handleSave();
-      } else if (e.key === "Escape") {
-        setOnEditMode(false);
-        setName(folder.title || NO_TITLE_MESSAGE); // revertir cambios
-      }
-    },
-    [handleSave, folder.title]
-  );
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") {
+      setOnEditMode(false);
+      setName(folder.title ?? null); // revertir a title original
+    }
+  }, [handleSave, folder.title]);
 
-  // abrir carpeta
   const handleOpen = useCallback(() => {
     onOpen(folder.id);
   }, [folder.id, onOpen]);

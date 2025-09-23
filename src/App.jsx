@@ -67,7 +67,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
-      <button onClick={restartArrays} disabled={true}>Reiniciar</button>
+      <button onClick={restartArrays} disabled={false}>Reiniciar</button>
       <div className="flex gap-10 p-3 items-center justify-between">
         <div className="flex gap-10 items-center">
           <button

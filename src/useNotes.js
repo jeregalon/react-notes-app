@@ -40,7 +40,6 @@ export default function useNotes() {
   }, [folders])
 
   const editFolder = useCallback((updatedFolder) => {
-    console.log(updatedFolder)
     setFolders((prev) =>
       prev.map((f) =>
         f.id === updatedFolder.id ? { ...f, ...updatedFolder } : f
@@ -100,7 +99,7 @@ export default function useNotes() {
     const now = new Date();
     const newFolder = {
       id: crypto.randomUUID(),
-      title: "Nueva carpeta",
+      title: null,
       date: now.toISOString(),
       folderId: folderId,
       type: TYPES.FOLDER,

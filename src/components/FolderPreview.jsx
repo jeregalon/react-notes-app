@@ -34,7 +34,7 @@ export default function FolderPreview({ folder, folderChildren = [], onDelete, o
             className="font-bold text-lg truncate outline-none text-yellow-400 w-full bg-transparent"
             type="text"
             placeholder={NO_TITLE_MESSAGE}
-            value={name === NO_TITLE_MESSAGE ? "" : name}
+            value={name ?? "Nueva carpeta"}
             ref={titleInputRef}
             onChange={(e) => {
               const currentText = e.target.value;

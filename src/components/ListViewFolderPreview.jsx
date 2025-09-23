@@ -33,7 +33,7 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
                     className="font-bold text-lg truncate outline-none text-yellow-400 w-32 shrink-0 bg-transparent"
                     type="text"
                     placeholder={NO_TITLE_MESSAGE}
-                    value={name === NO_TITLE_MESSAGE ? "" : name}
+                    value={name ?? "Nueva carpeta"}
                     ref={titleInputRef}
                     onChange={(e) => {
                         const currentText = e.target.value;
