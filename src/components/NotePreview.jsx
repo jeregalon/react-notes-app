@@ -1,14 +1,24 @@
-import { Trash2, Edit2 } from "lucide-react"
+import { Trash2, Edit2, Pin } from "lucide-react"
 import { TYPES, VIEWS } from "../constants";
+import { useState } from "react";
 
-export default function NotePreview({ id, title, content, date, onDelete, onEdit, folderId = null, view = VIEWS.GRID }) {
+export default function NotePreview({ id, title, content, date, onDelete, onEdit, folderId = null, view = VIEWS.GRID, pinned = false, onPin }) {
   
+  const [isPinned, setPinned] = useState(pinned)
+
   function handleDelete() {
     onDelete(id, title, TYPES.NOTE)
   }
 
   function handleEdit() {
     onEdit(id, title, content, folderId)
+  }
+
+  function handlePin() {
+    const newPinned = !isPinned
+    setPinned(newPinned)
+    onPin(id, newPinned, TYPES.NOTE)
+
   }
   
   return (
@@ -17,6 +27,11 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
           ? "w-80"
           : ""
         }`}>
+      <button
+        onClick={handlePin}
+        className="absolute top-3 right-17 p-2 text-gray-400 rotate-45 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
+        <Pin size={18} fill={isPinned ? "#ffffff" : "none"}/>
+      </button>
       <button
         onClick={handleEdit}
         className="absolute top-3 right-10 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">

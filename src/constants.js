@@ -23,6 +23,16 @@ export const NO_TITLE_MESSAGE = "Carpeta sin título";
 
 export const sortElements = (elements, sort, order) => {
   const wayToSort = (a, b) => {
+    // --- Prioridad: fijados primero ---
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+
+    // Si ambos están fijados -> ordenar por fecha de fijado DESC (más reciente primero)
+    if (a.pinned && b.pinned) {
+      return new Date(b.datePinned) - new Date(a.datePinned);
+    }
+
+    // --- Si ninguno está fijado, aplicar lógica normal ---
     if (sort === SORT_BY.DATE) {
       return order === ORDER.DESC
         ? new Date(b.date) - new Date(a.date)
@@ -34,12 +44,11 @@ export const sortElements = (elements, sort, order) => {
         : a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
 
     } else if (sort === SORT_BY.TYPE) {
-      // Primero comparar por tipo
-      const typeComparison = order === ORDER.DESC
-        ? b.type.localeCompare(a.type)
-        : a.type.localeCompare(b.type);
+      const typeComparison =
+        order === ORDER.DESC
+          ? b.type.localeCompare(a.type)
+          : a.type.localeCompare(b.type);
 
-      // Si son del mismo tipo, comparar por título
       if (typeComparison === 0) {
         return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
       }
@@ -51,3 +60,4 @@ export const sortElements = (elements, sort, order) => {
 
   return [...elements].sort(wayToSort);
 };
+

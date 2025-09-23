@@ -1,8 +1,21 @@
-import { Folder, Trash2, Edit2, Check, FolderOpen, FileText } from "lucide-react";
+import { Folder, Trash2, Edit2, Check, FolderOpen, FileText, Pin } from "lucide-react";
 import { TYPES, VIEWS, NO_TITLE_MESSAGE, sortElements } from "../constants";
 import useFolders from "../useFolders";
+import { useState } from "react";
 
-export default function FolderPreview({ folder, folderChildren = [], onDelete, onAddNote, onEdit, onOpen, view = VIEWS.GRID, sort, order }) 
+export default function FolderPreview({ 
+  folder, 
+  folderChildren = [], 
+  onDelete, 
+  onAddNote, 
+  onEdit, 
+  onOpen, 
+  view = VIEWS.GRID, 
+  sort, 
+  order, 
+  pinned = false,
+  onPin
+}) 
 {
   const {
     name,
@@ -17,7 +30,15 @@ export default function FolderPreview({ folder, folderChildren = [], onDelete, o
     handleOpen,
   } = useFolders({ folder, onEdit, onDelete, onAddNote, onOpen });
 
+  const [isPinned, setPinned] = useState(pinned)
+
   const icon = onEditMode ? <Check size={18} /> : <Edit2 size={18} />;
+
+  function handlePin() {
+    const newPinned = !isPinned
+    setPinned(newPinned)
+    onPin(folder.id, newPinned, TYPES.FOLDER)
+  }
 
   return (
     <div
@@ -47,6 +68,16 @@ export default function FolderPreview({ folder, folderChildren = [], onDelete, o
             onClick={(e) => e.stopPropagation()}
           />
         </div>
+
+        {/* Botón fijar */}
+        <button
+           onClick={(e) => {
+              e.stopPropagation();
+              handlePin()
+            }}
+          className="absolute top-3 right-17 p-2 text-gray-400 rotate-45 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
+          <Pin size={18} fill={isPinned ? "#ffffff" : "none"}/>
+        </button>
 
         {/* Botón editar/guardar */}
         <button

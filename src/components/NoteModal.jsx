@@ -28,7 +28,9 @@ export default function NoteModal({ id, onClose, onSave, initialTitle = "", init
         content: (content || noContentMessage).slice(0, MAX_CONTENT_LENGTH),
         date: now.toISOString(),
         folderId: folderId,
-        type: TYPES.NOTE
+        type: TYPES.NOTE,
+        pinned: false,
+        datePinned: null
       };
       onSave(newNote);
     }

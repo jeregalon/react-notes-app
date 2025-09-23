@@ -21,7 +21,8 @@ export default function App() {
     editFolder,
     openFolder,
     onNavigateBack,
-    deleteArrays
+    deleteArrays,
+    pinElement
   } = useNotes();
 
   const initialModalInfo = { isOpen: false, id: null, title: "", content: "", folderId: null };
@@ -77,6 +78,9 @@ export default function App() {
     if (newOrder != order) setOrder(newOrder)
   }
 
+  const onPin = (id, newPinned, type) => {
+    pinElement(id, newPinned, type)
+  }
 
   return (
     <div className="min-h-screen bg-black text-white p-8">
@@ -166,6 +170,8 @@ export default function App() {
                   date={item.date}
                   folderId={item.folderId}
                   view={view}
+                  pinned={item.pinned ?? false}
+                  onPin={onPin}
                   onDelete={onDelete}
                   onEdit={onEditNote}
                 />
@@ -177,6 +183,8 @@ export default function App() {
                   view={view}
                   sort={sort}
                   order={order}
+                  pinned={item.pinned ?? false}
+                  onPin={onPin}
                   onDelete={onDelete}
                   onAddNote={onAddNote}
                   onEdit={editFolder}
@@ -201,6 +209,8 @@ export default function App() {
                     date={note.date}
                     folderId={note.folderId}
                     view={view}
+                    pinned={note.pinned ?? false}
+                    onPin={onPin}
                     onDelete={onDelete}
                     onEdit={onEditNote}
                   />
@@ -217,12 +227,14 @@ export default function App() {
                 allNotesAndFolders={[...folders, ...notes]}
                 sort={sort}
                 order={order}
+                pinned={folder.pinned ?? false}
                 onDelete={onDelete}
                 onEditNote={onEditNote}
                 onAddNote={onAddNote}
                 onAddFolder={onAddFolder}
                 onEdit={editFolder}
                 onOpen={openFolder}
+                onPin={onPin}
               />
             ))}
         </div>

@@ -1,11 +1,25 @@
-import { Folder, Trash2, Edit2, Check, FolderOpen, FileText } from "lucide-react"
+import { Folder, Trash2, Edit2, Check, FolderOpen, FileText, Pin } from "lucide-react"
 import { TYPES, VIEWS, NO_TITLE_MESSAGE, sortElements } from '../constants';
 import useFolders from "../useFolders"
 import NotePreview from "./NotePreview";
 import FolderPreview from "./FolderPreview";
 import { NewButton } from "./NewButton";
+import { useState } from "react";
 
-export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditNote, onAddNote, onEdit, onOpen, onAddFolder, folder=null, sort, order }) {
+export function ListViewFolderPreview({ 
+    allNotesAndFolders=[], 
+    onDelete, 
+    onEditNote, 
+    onAddNote, 
+    onEdit, 
+    onOpen, 
+    onAddFolder, 
+    folder=null, 
+    sort, 
+    order,
+    pinned = false,
+    onPin
+}) {
     
     const {
     name,
@@ -21,7 +35,15 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
     handleOpen,
     } = useFolders({ folder, onEdit, onDelete, onAddNote, onAddFolder, onOpen });
 
+    const [isPinned, setPinned] = useState(pinned)
+
     const icon = onEditMode ? <Check size={22} /> : <Edit2 size={22} />;
+
+    function handlePin() {
+        const newPinned = !isPinned
+        setPinned(newPinned)
+        onPin(folder.id, newPinned, TYPES.FOLDER)
+    }
 
     return(
         <div className="py-4 overflow-x-auto">
@@ -46,13 +68,21 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
                 />
 
                 {/* Botones a la derecha */}
+
+                {/* Botón fijar */}
+                <button
+                    onClick={handlePin}
+                    className="ml-8 p-2 text-gray-400 rotate-45 hover:text-green-500 transition cursor-pointer transform duration-200 hover:scale-105">
+                    <Pin size={22} fill={isPinned ? "#ffffff" : "none"}/>
+                </button>
+
                 {/* Botón editar/guardar */}
                 <button
                     onClick={(e) => {
-                    e.stopPropagation();
-                    onEditMode ? handleSave() : setOnEditMode(true);
+                        e.stopPropagation();
+                        onEditMode ? handleSave() : setOnEditMode(true);
                     }}
-                    className="ml-8 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform duration-200 hover:scale-105"
+                    className="ml-4 p-2 text-gray-400 hover:text-green-500 transition cursor-pointer transform duration-200 hover:scale-105"
                 >
                     {icon}
                 </button>
@@ -61,7 +91,7 @@ export function ListViewFolderPreview({ allNotesAndFolders=[], onDelete, onEditN
                 <button
                     onClick={handleDelete}
                     disabled={onEditMode}
-                    className={`p-2 transition cursor-pointer transform duration-200 hover:scale-105 ml-2 
+                    className={`ml-4 p-2 transition cursor-pointer transform duration-200 hover:scale-105  
                     ${onEditMode ? "text-gray-600 cursor-not-allowed" : "text-gray-400 hover:text-red-500"}`}
                 >
                     <Trash2 size={22} />

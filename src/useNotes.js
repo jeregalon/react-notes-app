@@ -48,6 +48,24 @@ export default function useNotes() {
     updateParentDate(updatedFolder.folderId)
   }, [updateParentDate]);
 
+  const pinElement = useCallback((id, newPinned, type) => {
+    const datePinned = newPinned ? new Date().toISOString() : null;
+
+    if (type === TYPES.NOTE) {
+      setNotes((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, pinned: newPinned, datePinned } : n
+        )
+      );
+    } else if (type === TYPES.FOLDER) {
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === id ? { ...f, pinned: newPinned, datePinned } : f
+        )
+      );
+    }
+  }, []);
+
   const addNote = useCallback((note) => {
     const exists = notes.some(n => n.id === note.id);
     if (exists) {
@@ -103,6 +121,8 @@ export default function useNotes() {
       date: now.toISOString(),
       folderId: folderId,
       type: TYPES.FOLDER,
+      pinned: false,
+      datePinned: null
     };
     setFolders((prev) => [newFolder, ...prev]);
     updateParentDate(folderId)
@@ -141,6 +161,7 @@ export default function useNotes() {
     editFolder,
     openFolder,
     onNavigateBack,
-    deleteArrays
+    deleteArrays,
+    pinElement
   };
 }
