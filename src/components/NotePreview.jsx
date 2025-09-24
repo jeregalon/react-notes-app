@@ -1,5 +1,5 @@
 import { Trash2, Edit2, Pin } from "lucide-react"
-import { TYPES, VIEWS } from "../constants";
+import { TYPES, VIEWS, formatCustomDate } from "../constants";
 import { useState } from "react";
 
 export default function NotePreview({ id, title, content, date, onDelete, onEdit, folderId = null, view = VIEWS.GRID, pinned = false, onPin }) {
@@ -30,7 +30,7 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
       <button
         onClick={handlePin}
         className="absolute top-3 right-17 p-2 text-gray-400 rotate-45 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
-        <Pin size={18} fill={isPinned ? "#ffffff" : "none"}/>
+        <Pin size={18} stroke={isPinned ? "#ffffff" : "currentColor"} fill={isPinned ? "#ffffff" : "none"}/>
       </button>
       <button
         onClick={handleEdit}
@@ -47,7 +47,7 @@ export default function NotePreview({ id, title, content, date, onDelete, onEdit
       </div>      
       <p className="text-sm text-gray-200 mb-4 line-clamp-6">{content}</p>
       <p className="text-xs text-gray-400 mt-auto">
-        {new Date(date).toLocaleDateString("es-ES", { day: "numeric", month: "long" })}
+        {formatCustomDate(date)}
       </p>
     </div>
   );

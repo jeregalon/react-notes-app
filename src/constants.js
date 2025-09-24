@@ -61,3 +61,40 @@ export const sortElements = (elements, sort, order) => {
   return [...elements].sort(wayToSort);
 };
 
+export const formatCustomDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+
+  const sameDay = date.toDateString() === now.toDateString();
+
+  // Obtener inicio de la semana actual (lunes como inicio, se puede ajustar)
+  const dayOfWeek = now.getDay(); // 0=Dom, 1=Lun...
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - dayOfWeek + 1); // lunes
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  if (sameDay) {
+    // Hoy → solo hora
+    return date.toLocaleTimeString("es-ES", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } else if (date >= startOfWeek) {
+    // Esta semana → día corto + hora
+    return date.toLocaleString("es-ES", {
+      weekday: "short",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } else {
+    // Semana pasada o anterior → como estaba antes
+    return date.toLocaleDateString("es-ES", {
+      day: "numeric",
+      month: "long",
+    });
+  }
+}
+
+

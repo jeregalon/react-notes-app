@@ -73,7 +73,7 @@ export function ListViewFolderPreview({
                 <button
                     onClick={handlePin}
                     className="ml-8 p-2 text-gray-400 rotate-45 hover:text-green-500 transition cursor-pointer transform duration-200 hover:scale-105">
-                    <Pin size={22} fill={isPinned ? "#ffffff" : "none"}/>
+                    <Pin size={22} stroke={isPinned ? "#ffffff" : "currentColor"} fill={isPinned ? "#ffffff" : "none"}/>
                 </button>
 
                 {/* Botón editar/guardar */}

@@ -1,5 +1,5 @@
 import { Folder, Trash2, Edit2, Check, FolderOpen, FileText, Pin } from "lucide-react";
-import { TYPES, VIEWS, NO_TITLE_MESSAGE, sortElements } from "../constants";
+import { TYPES, VIEWS, NO_TITLE_MESSAGE, sortElements, formatCustomDate } from "../constants";
 import useFolders from "../useFolders";
 import { useState } from "react";
 
@@ -76,7 +76,7 @@ export default function FolderPreview({
               handlePin()
             }}
           className="absolute top-3 right-17 p-2 text-gray-400 rotate-45 hover:text-green-500 transition cursor-pointer transform transition duration-200 hover:scale-105">
-          <Pin size={18} fill={isPinned ? "#ffffff" : "none"}/>
+          <Pin size={18} stroke={isPinned ? "#ffffff" : "currentColor"} fill={isPinned ? "#ffffff" : "none"}/>
         </button>
 
         {/* Botón editar/guardar */}
@@ -149,10 +149,7 @@ export default function FolderPreview({
 
       {/* Fecha */}
       <p className="text-xs text-gray-400 mt-auto">
-        {new Date(folder.date).toLocaleDateString("es-ES", {
-          day: "numeric",
-          month: "long",
-        })}
+        {formatCustomDate(folder.date)}
       </p>
     </div>
   );
